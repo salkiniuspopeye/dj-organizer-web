@@ -26,6 +26,7 @@ export default function App() {
     const newTracks: Track[] = [];
     for await (const [fileHandle, relativePath] of walkDirectory(directoryHandle)) {
       const file = await fileHandle.getFile();
+      console.log('Found file:', file.name, 'Path:', relativePath); // Added log
       newTracks.push({
         id: file.name, // Use file name as ID for now, should be more robust later
         name: file.name,

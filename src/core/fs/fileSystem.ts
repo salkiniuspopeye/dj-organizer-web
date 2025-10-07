@@ -73,16 +73,19 @@ export async function* walkDirectory(
   dirHandle: FileSystemDirectoryHandle,
   parentPath = ''
 ): AsyncGenerator<[FileSystemFileHandle, string]> {
+  console.log('Walking directory:', dirHandle.name, 'Parent path:', parentPath); // Added log
   for await (const entry of dirHandle.values()) {
     const relativePath = `${parentPath}${parentPath ? '/' : ''}${entry.name}`;
     if (entry.kind === 'file') {
       const fileExtension = `.${entry.name.split('.').pop()?.toLowerCase()}`;
+      console.log('Checking file:', entry.name, 'Extension:', fileExtension); // Added log
       if (AUDIO_EXTENSIONS.includes(fileExtension)) {
         // We need to request the handle again to get a FileSystemFileHandle
         const fileHandle = await dirHandle.getFileHandle(entry.name);
         yield [fileHandle, relativePath];
       }
     } else if (entry.kind === 'directory') {
+      console.log('Entering subdirectory:', entry.name); // Added log
       const subDirHandle = await dirHandle.getDirectoryHandle(entry.name);
       yield* walkDirectory(subDirHandle, relativePath);
     }
