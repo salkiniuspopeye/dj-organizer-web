@@ -13,3 +13,9 @@
 - [ ] Bug: Falsche `type`-Deklaration in `useAudioPreview` beheben — Korrigiert einen potenziellen TypeScript-Fehler in Generics.
 - [ ] Docs: Readme mit Setup-Anweisungen aktualisieren — Beschreibt, wie das Projekt lokal aufgesetzt und ausgeführt wird.
 - [ ] Core: Export-Funktion für Playlisten implementieren — Ermöglicht den Export einer Liste von Tracks als Text- oder CSV-Datei.
+- [ ] Bug: Fix TS6133 'total' unused in App.tsx — Behebt den Fehler, dass 'total' in App.tsx deklariert, aber nicht verwendet wird.
+- [ ] Bug: Fix TS2552 'OffscreenAudioContext' in audioWorker.ts — Korrigiert den Fehler 'OffscreenAudioContext' in audioWorker.ts.
+- [ ] Bug: Fix TS2349 'Remote<AudioProcessor>' not callable in useAudioPreview.ts — Behebt den Fehler, dass 'Remote<AudioProcessor>' in useAudioPreview.ts nicht aufrufbar ist.
+- [ ] Bug: Fix TS2552 'getAudioContext' in useAudioPreview.ts — Korrigiert den Fehler 'getAudioContext' in useAudioPreview.ts.
+- [ ] Bug: Fix TS2552 'MovePlanItem' in db.ts — Korrigiert den Fehler 'MovePlanItem' in db.ts.
+- [ ] Bug: Fix TS2349 'Remote<ThumbnailProcessor>' not callable in TrackCard.tsx — Behebt den Fehler, dass 'Remote<ThumbnailProcessor>' in TrackCard.tsx nicht aufrufbar ist.
