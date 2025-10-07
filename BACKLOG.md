@@ -43,7 +43,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Bug: Fix TS2304 'Track' not found in App.tsx — Korrigiert den Fehler, dass 'Track' in App.tsx nicht gefunden wird.
 - [x] Bug: Fix TS6133 'tx' unused in db.ts — Behebt den Fehler, dass 'tx' in db.ts deklariert, aber nicht verwendet wird.
 - [x] Bug: Fix TS2304 'FileSystemPermissionMode' not found in directoryHandler.ts — Korrigiert den Fehler, dass 'FileSystemPermissionMode' in directoryHandler.ts nicht gefunden wird.
-- [ ] Bug: Fix TS2554 'ThumbnailProcessorWorker' arguments in TrackCard.tsx — Behebt den Fehler, dass 'ThumbnailProcessorWorker' in TrackCard.tsx falsche Argumente erhält.
+- [x] Bug: Fix TS2554 'ThumbnailProcessorWorker' arguments in TrackCard.tsx — Behebt den Fehler, dass 'ThumbnailProcessorWorker' in TrackCard.tsx falsche Argumente erhält.
 - [ ] Bug: Fix TS2552 'worker' not found in TrackCard.tsx — Korrigiert den Fehler, dass 'worker' in TrackCard.tsx nicht gefunden wird.
 
 ## P1 Tasks
