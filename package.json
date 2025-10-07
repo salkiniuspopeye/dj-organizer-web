@@ -18,6 +18,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.0",
     "@tanstack/react-virtual": "^3.13.12",
+    "comlink": "^4.4.2",
     "dexie": "^4.2.1",
     "dexie-react-hooks": "^4.2.0",
     "dropbox": "^10.34.0",

@@ -1,14 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { wrap } from 'comlink';
+import type { AudioProcessor } from './audioWorker';
 
-// Create a single, shared AudioContext, but lazily.
-let audioContext: AudioContext;
-function getAudioContext() {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext ||
-      (window as any).webkitAudioContext)();
-  }
-  return audioContext;
-}
+// Create a single, shared AudioContext.
+const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+// Create a Comlink-wrapped worker instance
+const AudioProcessorWorker = wrap<AudioProcessor>(new Worker(new URL('./audioWorker.ts', import.meta.url), { type: 'module' }));
 
 interface UseAudioPreviewProps {
   src?: string | File;
@@ -54,16 +52,18 @@ export function useAudioPreview({
       cleanupSource();
 
       try {
-        const context = getAudioContext();
         const url = src instanceof File ? URL.createObjectURL(src) : src;
+        const worker = await AudioProcessorWorker();
+        const decodedDuration = await worker.getAudioDuration(url);
+        
+        // Re-fetch and decode on main thread for playback (worker only for duration probe)
         const response = await fetch(url);
-        if (!response.ok)
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
-        const decodedBuffer = await context.decodeAudioData(arrayBuffer);
+        const decodedBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
         audioBufferRef.current = decodedBuffer;
-        setDuration(decodedBuffer.duration);
+        setDuration(decodedDuration);
       } catch (e) {
         setError('Failed to load or decode audio.');
         console.error(e);
