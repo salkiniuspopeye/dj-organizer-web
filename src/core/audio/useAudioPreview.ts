@@ -72,8 +72,7 @@ export function useAudioPreview({
 
       try {
         const url = src instanceof File ? URL.createObjectURL(src) : src;
-        const worker = await AudioProcessorWorker();
-        const decodedDuration = await worker.getAudioDuration(url);
+        const decodedDuration = await AudioProcessorWorker.getAudioDuration(url);
         
         // Re-fetch and decode on main thread for playback (worker only for duration probe)
         const response = await fetch(url);
@@ -106,7 +105,7 @@ export function useAudioPreview({
 
     cleanupSource(); // Clean up any previous source
 
-    const context = getAudioContext();
+    const context = audioContext;
     const source = context.createBufferSource();
     source.buffer = audioBufferRef.current;
     source.connect(context.destination);
@@ -139,7 +138,7 @@ export function useAudioPreview({
   const pause = useCallback(() => {
     if (!isPlaying || !sourceRef.current) return;
 
-    const context = getAudioContext();
+    const context = audioContext;
     // Calculate how much time has passed
     const elapsedTime = context.currentTime - startedAtRef.current;
     startTimeRef.current += elapsedTime;
