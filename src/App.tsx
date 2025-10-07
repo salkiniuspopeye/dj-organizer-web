@@ -1,9 +1,11 @@
+import { SwipeFeed } from './features/swipe/SwipeFeed';
+
 function App() {
   return (
-    <div className="bg-slate-800 text-white flex items-center justify-center h-screen">
-      <h1 className="text-4xl">DJ Organizer</h1>
+    <div className="bg-slate-800">
+      <SwipeFeed />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
