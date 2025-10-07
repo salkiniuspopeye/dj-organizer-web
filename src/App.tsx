@@ -17,6 +17,7 @@ export default function App() {
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [pendingMovePlan, setPendingMovePlan] = useState<MovePlan | null>(null);
   const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
+  const [trackCount, setTrackCount] = useState(0);
 
   // Check for pending move plans on startup
   useEffect(() => {
@@ -41,6 +42,15 @@ export default function App() {
   useEffect(() => {
     handleIndexFolder();
   }, [directoryHandle, handleIndexFolder]);
+
+  // Fetch track count on startup and after indexing
+  useEffect(() => {
+    const fetchTrackCount = async () => {
+      const count = await db.tracks.count();
+      setTrackCount(count);
+    };
+    fetchTrackCount();
+  }, [directoryHandle]); // Re-fetch when directoryHandle changes (implies new indexing)
 
   const handleGenerateAndExecuteMovePlan = useCallback(async () => {
     setIsMoving(true);
@@ -187,59 +197,82 @@ export default function App() {
   return (
     <div className="p-4 rounded-xl bg-indigo-600 text-white">
       {t("app_title")}
-      <button
-        onClick={async () => {
-          try {
-            const handle = await window.showDirectoryPicker();
-            await saveDirectoryHandle(handle);
-            setDirectoryHandle(handle);
-          } catch (error) {
-            console.error('Error selecting directory:', error);
-          }
-        }}
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        aria-label="Ordner wählen"
-      >
-        Ordner wählen
-      </button>
-
-      <button
-        onClick={handleGenerateAndExecuteMovePlan}
-        disabled={isMoving || !!pendingMovePlan}
-        className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-        aria-label={isMoving ? 'Moving files' : 'Generate and execute move plan'}
-      >
-        {isMoving ? 'Moving...' : 'Generate & Execute Move Plan'}
-      </button>
-
-      {pendingMovePlan && (
-        <div className="mt-4 p-4 bg-yellow-600 rounded-lg">
-          <p className="text-white mb-2">A pending move operation was found.</p>
+      {trackCount === 0 ? (
+        <div className="mt-8 text-center">
+          <p className="text-lg text-gray-300 mb-4">{t("empty_state_message")}</p>
           <button
-            onClick={handleResumeMove}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-            aria-label="Resume pending move operation"
+            onClick={async () => {
+              try {
+                const handle = await window.showDirectoryPicker();
+                await saveDirectoryHandle(handle);
+                setDirectoryHandle(handle);
+              } catch (error) {
+                console.error('Error selecting directory:', error);
+              }
+            }}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            aria-label="Ordner wählen"
           >
-            Resume Move
-          </button>
-          <button
-            onClick={handleDiscardMove}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            aria-label="Discard pending move operation"
-          >
-            Discard Move
+            {t("select_folder_button")}
           </button>
         </div>
-      )}
+      ) : (
+        <>
+          <button
+            onClick={async () => {
+              try {
+                const handle = await window.showDirectoryPicker();
+                await saveDirectoryHandle(handle);
+                setDirectoryHandle(handle);
+              } catch (error) {
+                console.error('Error selecting directory:', error);
+              }
+            }}
+            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            aria-label="Ordner wählen"
+          >
+            Ordner wählen
+          </button>
 
-      <MoveProgressDialog
-        isOpen={isMoving}
-        progress={moveProgress}
-        total={moveTotal}
-        currentItem={currentMoveItem}
-        onCancel={handleCancelMove}
-      />
-      <SwipeFeed />
+          <button
+            onClick={handleGenerateAndExecuteMovePlan}
+            disabled={isMoving || !!pendingMovePlan}
+            className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            aria-label={isMoving ? 'Moving files' : 'Generate and execute move plan'}
+          >
+            {isMoving ? 'Moving...' : 'Generate & Execute Move Plan'}
+          </button>
+
+          {pendingMovePlan && (
+            <div className="mt-4 p-4 bg-yellow-600 rounded-lg">
+              <p className="text-white mb-2">A pending move operation was found.</p>
+              <button
+                onClick={handleResumeMove}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                aria-label="Resume pending move operation"
+              >
+                Resume Move
+              </button>
+              <button
+                onClick={handleDiscardMove}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                aria-label="Discard pending move operation"
+              >
+                Discard Move
+              </button>
+            </div>
+          )}
+
+          <MoveProgressDialog
+            isOpen={isMoving}
+            progress={moveProgress}
+            total={moveTotal}
+            currentItem={currentMoveItem}
+            onCancel={handleCancelMove}
+          />
+          <SwipeFeed />
+        </>
+      )}
     </div>
   );
 }
