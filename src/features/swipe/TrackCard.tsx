@@ -63,35 +63,26 @@ export const TrackCard: React.FC<TrackCardProps> = ({
           onClick={togglePlayPause}
           disabled={isLoading || !!error}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label={isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
         >
-          {isLoading
-            ? t('loading')
-            : isPlaying
-              ? t('pause')
-              : t('play_preview')}
+          {isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
         </button>
-        {error && (
-          <p className="text-red-500 text-sm mt-2">
-            {t('error')}: {error}
-          </p>
-        )}
+        {error && <p className="text-red-500 text-sm mt-2" role="alert">{t("error")}: {error}</p>}
       </div>
 
       {/* Genre Select */}
       <div className="p-4 border-t border-gray-700">
-        <label
-          htmlFor={`genre-select-${track.id}`}
-          className="block text-gray-300 text-sm font-bold mb-2"
-        >
-          {t('genre')}:
+        <label htmlFor={`genre-select-${track.id}`} className="block text-gray-300 text-sm font-bold mb-2">
+          {t("genre")}:
         </label>
         <select
           id={`genre-select-${track.id}`}
           value={track.genre || ''}
           onChange={(e) => onGenreChange(track.id, e.target.value)}
           className="block w-full bg-gray-700 border border-gray-600 text-white py-2 px-3 rounded leading-tight focus:outline-none focus:bg-gray-600 focus:border-blue-500"
+          aria-label={t("select_genre")}
         >
-          <option value="">{t('select_genre')}</option>
+          <option value="">{t("select_genre")}</option>
           {allGenres.map((genre) => (
             <option key={genre.id} value={genre.name}>
               {genre.name}
@@ -101,20 +92,18 @@ export const TrackCard: React.FC<TrackCardProps> = ({
       </div>
 
       {/* Mood Select */}
-      <div className="p-4 border-t border-gray-700">
-        <p className="block text-gray-300 text-sm font-bold mb-2">
-          {t('mood')}:
-        </p>
+      <div className="p-4 border-t border-gray-700" role="group" aria-labelledby="mood-label">
+        <p id="mood-label" className="block text-gray-300 text-sm font-bold mb-2">{t("mood")}:</p>
         <div className="flex flex-wrap gap-2">
           {Object.entries(moods).map(([moodKey, moodValue]) => (
             <button
               key={moodKey}
-              onClick={() =>
-                onMoodChange(track.id, moodKey as keyof typeof moods)
-              }
+              onClick={() => onMoodChange(track.id, moodKey as keyof typeof moods)}
               className={`flex items-center px-3 py-1 rounded-full text-sm font-medium
                 ${track.mood === moodKey ? `bg-${moodValue.color}-500 text-white` : 'bg-gray-600 text-gray-300 hover:bg-gray-500'}
               `}
+              aria-pressed={track.mood === moodKey}
+              aria-label={`${t("mood")}: ${moodKey}`}
             >
               {moodValue.icon} {moodKey}
             </button>
