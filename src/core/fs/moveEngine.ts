@@ -1,6 +1,6 @@
 import { db, Track } from '../db/db';
 import { buildTargetPath } from './pathBuilder';
-import { getDirectoryHandle, walkDirectory, moveFile as fsMoveFile } from './fileSystem';
+import { getDirectoryHandle, walkDirectory, moveFile as fsMoveFile, getFileHandleFromPath } from './fileSystem';
 import { getDropboxClient, moveFile as dropboxMoveFile } from '../dropbox/dropbox';
 
 export interface MovePlanItem {
