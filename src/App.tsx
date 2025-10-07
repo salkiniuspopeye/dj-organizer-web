@@ -194,6 +194,25 @@ export default function App() {
     console.log(`Indexed ${newTracks.length} tracks.`);
   }, [directoryHandle]);
 
+  const handleLoadDemoData = useCallback(async () => {
+    const demoTracks: Track[] = [];
+    for (let i = 1; i <= 10; i++) {
+      demoTracks.push({
+        id: `demo-track-${i}`,
+        name: `Demo Track ${i}.mp3`,
+        size: 1024 * 1024 * (5 + i), // Varying sizes
+        mtime: Date.now() + i * 1000,
+        source: 'local',
+        path: `/path/to/demo/Demo Track ${i}.mp3`,
+        genre: i % 2 === 0 ? 'Techno' : 'House',
+        mood: i % 3 === 0 ? 'BANGER' : 'ENERGY',
+        status: 'unassigned',
+      });
+    }
+    await trackRepository.saveTracks(demoTracks);
+    console.log(`Loaded ${demoTracks.length} demo tracks.`);
+  }, []);
+
   return (
     <div className="p-4 rounded-xl bg-indigo-600 text-white">
       {t("app_title")}
@@ -210,10 +229,17 @@ export default function App() {
                 console.error('Error selecting directory:', error);
               }
             }}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
             aria-label="Ordner wählen"
           >
             {t("select_folder_button")}
+          </button>
+          <button
+            onClick={handleLoadDemoData}
+            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            aria-label="Demo-Daten laden"
+          >
+            {t("load_demo_data_button")}
           </button>
         </div>
       ) : (
