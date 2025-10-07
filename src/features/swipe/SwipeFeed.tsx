@@ -3,6 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db, Track, Genre, moods } from '../../core/db/db';
 import { TrackCard } from './TrackCard';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 10;
 
@@ -10,6 +11,7 @@ export const SwipeFeed: React.FC = () => {
   const parentRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
   const [allGenres, setAllGenres] = useState<Genre[]>([]);
+  const { t } = useTranslation();
 
   // Fetch all genres from the database
   useEffect(() => {
@@ -48,7 +50,7 @@ export const SwipeFeed: React.FC = () => {
     ) {
       setOffset((prevOffset) => prevOffset + PAGE_SIZE);
     }
-  }, [lastItems, tracks, db.tracks]);
+  }, [virtualItems, tracks, db.tracks]); // Corrected dependency: lastItem is not a stable reference
 
   const handleGenreChange = useCallback(async (trackId: string, genre: string) => {
     await db.tracks.update(trackId, { genre, status: 'assigned' });
@@ -59,11 +61,11 @@ export const SwipeFeed: React.FC = () => {
   }, []);
 
   if (!tracks) {
-    return <div className="text-white">Loading tracks...</div>;
+    return <div className="text-white">{t("loading_tracks")}</div>;
   }
 
   if (tracks.length === 0) {
-    return <div className="text-white">No tracks found.</div>;
+    return <div className="text-white">{t("no_tracks_found")}</div>;
   }
 
   return (

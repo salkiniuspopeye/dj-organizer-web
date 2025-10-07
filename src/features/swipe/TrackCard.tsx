@@ -1,6 +1,7 @@
 import React from 'react';
 import { Track, moods, Genre } from '../../core/db/db';
 import { useAudioPreview } from '../../core/audio/useAudioPreview';
+import { useTranslation } from 'react-i18next';
 
 interface TrackCardProps {
   track: Track;
@@ -15,6 +16,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
   onMoodChange,
   allGenres,
 }) => {
+  const { t } = useTranslation();
   const { isPlaying, togglePlayPause, isLoading, error } = useAudioPreview({
     src: track.path, // Assuming track.path is a URL or File
     startOffsetPercent: 0.35,
@@ -27,15 +29,15 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         {track.artwork ? (
           <img src={URL.createObjectURL(track.artwork)} alt="Artwork" className="object-cover w-full h-full" />
         ) : (
-          <span>No Artwork</span>
+          <span>{t("no_artwork")}</span>
         )}
       </div>
 
       {/* Metadata */}
       <div className="p-4">
         <h3 className="text-xl font-semibold text-white truncate">{track.title || track.name}</h3>
-        <p className="text-gray-400 text-sm">{track.artist || 'Unknown Artist'}</p>
-        <p className="text-gray-500 text-xs">Duration: {track.duration ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}` : 'N/A'}</p>
+        <p className="text-gray-400 text-sm">{track.artist || t("unknown_artist")}</p>
+        <p className="text-gray-500 text-xs">{t("duration")}: {track.duration ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}` : 'N/A'}</p>
       </div>
 
       {/* Play/Pause Button */}
@@ -45,15 +47,15 @@ export const TrackCard: React.FC<TrackCardProps> = ({
           disabled={isLoading || !!error}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Loading...' : isPlaying ? 'Pause' : 'Play Preview'}
+          {isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
         </button>
-        {error && <p className="text-red-500 text-sm mt-2">Error: {error}</p>}
+        {error && <p className="text-red-500 text-sm mt-2">{t("error")}: {error}</p>}
       </div>
 
       {/* Genre Select */}
       <div className="p-4 border-t border-gray-700">
         <label htmlFor={`genre-select-${track.id}`} className="block text-gray-300 text-sm font-bold mb-2">
-          Genre:
+          {t("genre")}:
         </label>
         <select
           id={`genre-select-${track.id}`}
@@ -61,7 +63,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
           onChange={(e) => onGenreChange(track.id, e.target.value)}
           className="block w-full bg-gray-700 border border-gray-600 text-white py-2 px-3 rounded leading-tight focus:outline-none focus:bg-gray-600 focus:border-blue-500"
         >
-          <option value="">Select Genre</option>
+          <option value="">{t("select_genre")}</option>
           {allGenres.map((genre) => (
             <option key={genre.id} value={genre.name}>
               {genre.name}
@@ -72,7 +74,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
 
       {/* Mood Select */}
       <div className="p-4 border-t border-gray-700">
-        <p className="block text-gray-300 text-sm font-bold mb-2">Mood:</p>
+        <p className="block text-gray-300 text-sm font-bold mb-2">{t("mood")}:</p>
         <div className="flex flex-wrap gap-2">
           {Object.entries(moods).map(([moodKey, moodValue]) => (
             <button
@@ -98,7 +100,12 @@ export const TrackCard: React.FC<TrackCardProps> = ({
               'bg-gray-100 text-gray-800'
             }`}
         >
-          Status: {track.status}
+          {t("status")}: {
+            track.status === 'unassigned' ? t("status_unassigned") :
+            track.status === 'assigned' ? t("status_assigned") :
+            track.status === 'moved' ? t("status_moved") :
+            t("status_error")
+          }
         </span>
       </div>
     </div>
