@@ -65,6 +65,10 @@ export async function getDirectoryHandle(): Promise<FileSystemDirectoryHandle> {
  * @param dirHandle The FileSystemDirectoryHandle to start from.
  * @returns An async generator that yields [FileSystemFileHandle, relativePath].
  */
+const AUDIO_EXTENSIONS = [
+  '.mp3', '.wav', '.ogg', '.flac', '.aiff', '.aif',
+];
+
 export async function* walkDirectory(
   dirHandle: FileSystemDirectoryHandle,
   parentPath = ''
@@ -72,9 +76,12 @@ export async function* walkDirectory(
   for await (const entry of dirHandle.values()) {
     const relativePath = `${parentPath}${parentPath ? '/' : ''}${entry.name}`;
     if (entry.kind === 'file') {
-      // We need to request the handle again to get a FileSystemFileHandle
-      const fileHandle = await dirHandle.getFileHandle(entry.name);
-      yield [fileHandle, relativePath];
+      const fileExtension = `.${entry.name.split('.').pop()?.toLowerCase()}`;
+      if (AUDIO_EXTENSIONS.includes(fileExtension)) {
+        // We need to request the handle again to get a FileSystemFileHandle
+        const fileHandle = await dirHandle.getFileHandle(entry.name);
+        yield [fileHandle, relativePath];
+      }
     } else if (entry.kind === 'directory') {
       const subDirHandle = await dirHandle.getDirectoryHandle(entry.name);
       yield* walkDirectory(subDirHandle, relativePath);
