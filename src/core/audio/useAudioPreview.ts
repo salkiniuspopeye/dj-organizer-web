@@ -8,6 +8,25 @@ const audioContext = new (window.AudioContext || (window as any).webkitAudioCont
 // Create a Comlink-wrapped worker instance
 const AudioProcessorWorker = wrap<AudioProcessor>(new Worker(new URL('./audioWorker.ts', import.meta.url), { type: 'module' }));
 
+const MAX_CONCURRENT_DECODES = 3; // Limit concurrent decodes
+let currentDecodes = 0;
+const decodeQueue: (() => Promise<void>)[] = [];
+
+async function processDecodeQueue() {
+  if (currentDecodes < MAX_CONCURRENT_DECODES && decodeQueue.length > 0) {
+    currentDecodes++;
+    const nextDecode = decodeQueue.shift();
+    if (nextDecode) {
+      try {
+        await nextDecode();
+      } finally {
+        currentDecodes--;
+        processDecodeQueue();
+      }
+    }
+  }
+}
+
 interface UseAudioPreviewProps {
   src?: string | File;
   startOffsetPercent?: number; // e.g., 0.35 for 35%
@@ -46,7 +65,7 @@ export function useAudioPreview({
       return;
     }
 
-    const loadAudio = async () => {
+    const decodeAndSetAudio = async () => {
       setIsLoading(true);
       setError(null);
       cleanupSource();
@@ -72,7 +91,12 @@ export function useAudioPreview({
       setIsLoading(false);
     };
 
-    loadAudio();
+    const enqueueDecode = () => {
+      decodeQueue.push(decodeAndSetAudio);
+      processDecodeQueue();
+    };
+
+    enqueueDecode();
 
     return cleanupSource;
   }, [src, cleanupSource]);
