@@ -210,7 +210,7 @@ export default function App() {
                 console.error('Error selecting directory:', error);
               }
             }}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             aria-label="Ordner wählen"
           >
             {t("select_folder_button")}
@@ -228,7 +228,7 @@ export default function App() {
                 console.error('Error selecting directory:', error);
               }
             }}
-            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             aria-label="Ordner wählen"
           >
             Ordner wählen
@@ -237,7 +237,7 @@ export default function App() {
           <button
             onClick={handleGenerateAndExecuteMovePlan}
             disabled={isMoving || !!pendingMovePlan}
-            className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             aria-label={isMoving ? 'Moving files' : 'Generate and execute move plan'}
           >
             {isMoving ? 'Moving...' : 'Generate & Execute Move Plan'}
@@ -248,14 +248,14 @@ export default function App() {
               <p className="text-white mb-2">A pending move operation was found.</p>
               <button
                 onClick={handleResumeMove}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 aria-label="Resume pending move operation"
               >
                 Resume Move
               </button>
               <button
                 onClick={handleDiscardMove}
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 aria-label="Discard pending move operation"
               >
                 Discard Move

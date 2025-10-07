@@ -56,7 +56,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Core: Dropbox-Dateiliste abrufen — Implementiert das Abrufen von Dateien aus Dropbox.
 - [x] Test: E2E-Tests für Kernfunktionen — Schreibt End-to-End-Tests für wichtige Benutzerflows.
 - [ ] Test: Unit-Tests für Indexer — Fügt Unit-Tests für die Indexer-Logik hinzu.
-- [ ] A11y: Tastaturnavigation verbessern — Stellt sicher, dass die App vollständig über die Tastatur bedienbar ist.
+- [x] A11y: Tastaturnavigation verbessern — Stellt sicher, dass die App vollständig über die Tastatur bedienbar ist.
 - [ ] A11y: ARIA-Labels für UI-Elemente — Fügt ARIA-Labels für eine bessere Screenreader-Unterstützung hinzu.
 
 ## P2 Tasks

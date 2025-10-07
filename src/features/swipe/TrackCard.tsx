@@ -78,7 +78,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         <button
           onClick={togglePlayPause}
           disabled={isLoading || !!error}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
         >
           {isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
@@ -115,7 +115,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
             <button
               key={moodKey}
               onClick={() => onMoodChange(track.id, moodKey as keyof typeof moods)}
-              className={`flex items-center px-3 py-1 rounded-full text-sm font-medium
+              className={`flex items-center px-3 py-1 rounded-full text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
                 ${track.mood === moodKey ? `bg-${moodValue.color}-500 text-white` : 'bg-gray-600 text-gray-300 hover:bg-gray-500'}
               `}
               aria-pressed={track.mood === moodKey}
