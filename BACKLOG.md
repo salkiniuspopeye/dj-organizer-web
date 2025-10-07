@@ -13,7 +13,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 
 ## P0 Tasks
 
-- [ ] Bug: Fix TS2552 'OffscreenAudioContext' in audioWorker.ts — Korrigiert den Fehler 'OffscreenAudioContext' in audioWorker.ts.
+- [x] Bug: Fix TS2552 'OffscreenAudioContext' in audioWorker.ts — Korrigiert den Fehler 'OffscreenAudioContext' in audioWorker.ts.
 - [ ] Bug: Fix TS2349 'Remote<AudioProcessor>' not callable in useAudioPreview.ts — Behebt den Fehler, dass 'Remote<AudioProcessor>' in useAudioPreview.ts nicht aufrufbar ist.
 - [ ] Bug: Fix TS2552 'getAudioContext' in useAudioPreview.ts — Korrigiert den Fehler 'getAudioContext' in useAudioPreview.ts.
 - [ ] Bug: Fix TS2552 'MovePlanItem' in db.ts — Korrigiert den Fehler 'MovePlanItem' in db.ts.
