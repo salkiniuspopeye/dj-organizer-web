@@ -42,26 +42,27 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
 
     const planItem: MovePlanItem = {
       track,
-      sourcePath:
-        track.source === 'local' ? track.path : track.dropboxPathLower || '',
+      sourcePath: track.source === 'local' ? track.path : track.dropboxPathLower || '',
       targetPath,
     };
 
-    // Check for path conflicts
-    if (targetPathMap.has(targetPath)) {
-      planItem.conflict = 'path_exists';
-      planItem.conflictReason = `Another track (${targetPathMap.get(targetPath)?.name}) is already planned for this path.`;
-    } else {
-      targetPathMap.set(targetPath, track);
+    // Resolve path conflicts by adding a suffix
+    let uniqueTargetPath = targetPath;
+    let suffix = 1;
+    while (targetPathMap.has(uniqueTargetPath)) {
+      suffix++;
+      const fileName = targetPath.substring(targetPath.lastIndexOf('/') + 1);
+      const baseName = fileName.substring(0, fileName.lastIndexOf('.'));
+      const extension = fileName.substring(fileName.lastIndexOf('.'));
+      uniqueTargetPath = `${targetPath.substring(0, targetPath.lastIndexOf('/'))}/${baseName} (${suffix})${extension}`;
     }
+    planItem.targetPath = uniqueTargetPath;
+    targetPathMap.set(uniqueTargetPath, track);
 
     // Check for duplicate content (size + mtime)
     if (track.size && track.mtime) {
       const contentHash = `${track.size}-${track.mtime}`;
-      if (
-        contentHashToTrackMap.has(contentHash) &&
-        targetPathMap.has(targetPath)
-      ) {
+      if (contentHashToTrackMap.has(contentHash) && targetPathMap.has(planItem.targetPath)) {
         planItem.conflict = 'duplicate_content';
         planItem.conflictReason = `A track with identical content (${contentHashToTrackMap.get(contentHash)?.name}) is already planned for this path.`;
       } else {

@@ -87,8 +87,8 @@ describe('Move Engine', () => {
       expect(plan[0].conflict).toBeUndefined();
     });
 
-    it('should detect path conflicts', async () => {
-      const mockTracks: Track[] = [
+    it('should resolve path conflicts by adding a suffix', async () => {
+      const mockTracks: type Track[] = [
         {
           id: '1',
           name: 'Track 1.mp3',
@@ -117,9 +117,10 @@ describe('Move Engine', () => {
       const plan = await generateMovePlan();
 
       expect(plan).toHaveLength(2);
+      expect(plan[0].targetPath).toBe('Finished Tracks/Techno/BANGER/Track 1.mp3');
+      expect(plan[1].targetPath).toBe('Finished Tracks/Techno/BANGER/Track 1 (2).mp3');
       expect(plan[0].conflict).toBeUndefined();
-      expect(plan[1].conflict).toBe('path_exists');
-      expect(plan[1].conflictReason).toContain('Another track');
+      expect(plan[1].conflict).toBeUndefined(); // Path conflict is now resolved by renaming
     });
 
     it('should detect duplicate content (size + mtime)', async () => {
