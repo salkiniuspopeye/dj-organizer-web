@@ -1,26 +1,106 @@
 import React from 'react';
-import { Track } from '../../core/db/db';
+import { Track, moods, Genre } from '../../core/db/db';
 import { useAudioPreview } from '../../core/audio/useAudioPreview';
 
 interface TrackCardProps {
   track: Track;
+  onGenreChange: (trackId: string, genre: string) => void;
+  onMoodChange: (trackId: string, mood: keyof typeof moods) => void;
+  allGenres: Genre[];
 }
 
-export function TrackCard({ track }: TrackCardProps) {
-  const { isPlaying, play, pause } = useAudioPreview({ src: track.path });
+export const TrackCard: React.FC<TrackCardProps> = ({
+  track,
+  onGenreChange,
+  onMoodChange,
+  allGenres,
+}) => {
+  const { isPlaying, togglePlayPause, isLoading, error } = useAudioPreview({
+    src: track.path, // Assuming track.path is a URL or File
+    startOffsetPercent: 0.35,
+  });
 
   return (
-    <div className="bg-slate-700 p-4 rounded-lg shadow-md text-white">
-      <h2 className="text-xl font-bold mb-2">{track.name}</h2>
-      <div className="flex items-center gap-4">
+    <div className="relative w-full max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+      {/* Artwork */}
+      <div className="w-full h-80 bg-gray-700 flex items-center justify-center text-gray-400 text-4xl font-bold">
+        {track.artwork ? (
+          <img src={URL.createObjectURL(track.artwork)} alt="Artwork" className="object-cover w-full h-full" />
+        ) : (
+          <span>No Artwork</span>
+        )}
+      </div>
+
+      {/* Metadata */}
+      <div className="p-4">
+        <h3 className="text-xl font-semibold text-white truncate">{track.title || track.name}</h3>
+        <p className="text-gray-400 text-sm">{track.artist || 'Unknown Artist'}</p>
+        <p className="text-gray-500 text-xs">Duration: {track.duration ? `${Math.floor(track.duration / 60)}:${Math.floor(track.duration % 60).toString().padStart(2, '0')}` : 'N/A'}</p>
+      </div>
+
+      {/* Play/Pause Button */}
+      <div className="p-4 border-t border-gray-700 flex justify-center">
         <button
-          onClick={isPlaying ? pause : play}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={togglePlayPause}
+          disabled={isLoading || !!error}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isPlaying ? 'Pause' : 'Play'}
+          {isLoading ? 'Loading...' : isPlaying ? 'Pause' : 'Play Preview'}
         </button>
-        <p>Status: {track.status}</p>
+        {error && <p className="text-red-500 text-sm mt-2">Error: {error}</p>}
+      </div>
+
+      {/* Genre Select */}
+      <div className="p-4 border-t border-gray-700">
+        <label htmlFor={`genre-select-${track.id}`} className="block text-gray-300 text-sm font-bold mb-2">
+          Genre:
+        </label>
+        <select
+          id={`genre-select-${track.id}`}
+          value={track.genre || ''}
+          onChange={(e) => onGenreChange(track.id, e.target.value)}
+          className="block w-full bg-gray-700 border border-gray-600 text-white py-2 px-3 rounded leading-tight focus:outline-none focus:bg-gray-600 focus:border-blue-500"
+        >
+          <option value="">Select Genre</option>
+          {allGenres.map((genre) => (
+            <option key={genre.id} value={genre.name}>
+              {genre.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Mood Select */}
+      <div className="p-4 border-t border-gray-700">
+        <p className="block text-gray-300 text-sm font-bold mb-2">Mood:</p>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(moods).map(([moodKey, moodValue]) => (
+            <button
+              key={moodKey}
+              onClick={() => onMoodChange(track.id, moodKey as keyof typeof moods)}
+              className={`flex items-center px-3 py-1 rounded-full text-sm font-medium
+                ${track.mood === moodKey ? `bg-${moodValue.color}-500 text-white` : 'bg-gray-600 text-gray-300 hover:bg-gray-500'}
+              `}
+            >
+              {moodValue.icon} {moodKey}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Status Badge */}
+      <div className="p-4 border-t border-gray-700">
+        <span
+          className={`inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium
+            ${track.status === 'assigned' ? 'bg-green-100 text-green-800' :
+              track.status === 'moved' ? 'bg-purple-100 text-purple-800' :
+              track.status === 'error' ? 'bg-red-100 text-red-800' :
+              'bg-gray-100 text-gray-800'
+            }`}
+        >
+          Status: {track.status}
+        </span>
       </div>
     </div>
   );
-}
+};

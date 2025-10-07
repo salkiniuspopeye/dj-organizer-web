@@ -1,71 +1,109 @@
-import React from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { Track } from '../../core/db/db';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db, Track, Genre, moods } from '../../core/db/db';
 import { TrackCard } from './TrackCard';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
-const mockTracks: Track[] = [
-  {
-    id: '1',
-    name: 'Track 1',
-    path: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    size: 1000,
-    source: 'local',
-    status: 'unassigned',
-  },
-  {
-    id: '2',
-    name: 'Track 2',
-    path: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    size: 1000,
-    source: 'local',
-    status: 'unassigned',
-  },
-  {
-    id: '3',
-    name: 'Track 3',
-    path: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    size: 1000,
-    source: 'local',
-    status: 'unassigned',
-  },
-];
+const PAGE_SIZE = 10;
 
-export function SwipeFeed() {
-  const parentRef = React.useRef<HTMLDivElement>(null);
+export const SwipeFeed: React.FC = () => {
+  const parentRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+  const [allGenres, setAllGenres] = useState<Genre[]>([]);
+
+  // Fetch all genres from the database
+  useEffect(() => {
+    const fetchGenres = async () => {
+      const genres = await db.genres.toArray();
+      setAllGenres(genres);
+    };
+    fetchGenres();
+  }, []);
+
+  // Fetch tracks from the database with pagination
+  const tracks = useLiveQuery(
+    () => db.tracks.offset(offset).limit(PAGE_SIZE).toArray(),
+    [offset]
+  );
 
   const rowVirtualizer = useVirtualizer({
-    count: mockTracks.length,
+    count: tracks?.length || 0,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 350, // estimate of a card's height
+    estimateSize: () => 600, // Estimate height of a TrackCard
+    overscan: 5,
   });
 
+  const virtualItems = rowVirtualizer.getVirtualItems();
+
+  // Load more items when scrolling near the end
+  useEffect(() => {
+    const [lastItem] = [...virtualItems].reverse();
+    if (!lastItem) {
+      return;
+    }
+
+    if (
+      lastItem.index >= (tracks?.length || 0) - 1 &&
+      (tracks?.length || 0) < (db.tracks.count() || 0) // Check if there are more tracks in DB
+    ) {
+      setOffset((prevOffset) => prevOffset + PAGE_SIZE);
+    }
+  }, [lastItems, tracks, db.tracks]);
+
+  const handleGenreChange = useCallback(async (trackId: string, genre: string) => {
+    await db.tracks.update(trackId, { genre, status: 'assigned' });
+  }, []);
+
+  const handleMoodChange = useCallback(async (trackId: string, mood: keyof typeof moods) => {
+    await db.tracks.update(trackId, { mood, status: 'assigned' });
+  }, []);
+
+  if (!tracks) {
+    return <div className="text-white">Loading tracks...</div>;
+  }
+
+  if (tracks.length === 0) {
+    return <div className="text-white">No tracks found.</div>;
+  }
+
   return (
-    <div ref={parentRef} className="h-screen overflow-y-auto snap-y snap-mandatory">
+    <div
+      ref={parentRef}
+      className="list-container w-full h-[calc(100vh-100px)] overflow-auto snap-y snap-mandatory"
+    >
       <div
         style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
+          height: rowVirtualizer.getTotalSize(),
           width: '100%',
           position: 'relative',
         }}
       >
-        {rowVirtualizer.getVirtualItems().map((virtualItem) => (
-          <div
-            key={virtualItem.key}
-            className="snap-start"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: `${virtualItem.size}px`,
-              transform: `translateY(${virtualItem.start}px)`,
-              padding: '1rem',
-            }}
-          >
-            <TrackCard track={mockTracks[virtualItem.index]} />
-          </div>
-        ))}
+        {virtualItems.map((virtualRow) => {
+          const track = tracks[virtualRow.index];
+          return (
+            <div
+              key={virtualRow.key}
+              data-index={virtualRow.index}
+              ref={rowVirtualizer.measureElement}
+              className="snap-center"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <TrackCard
+                track={track}
+                onGenreChange={handleGenreChange}
+                onMoodChange={handleMoodChange}
+                allGenres={allGenres}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
-}
+};
