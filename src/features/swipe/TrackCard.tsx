@@ -45,9 +45,9 @@ export const TrackCard: React.FC<TrackCardProps> = ({
       {/* Artwork */}
       <div className="w-full h-80 bg-gray-700 flex items-center justify-center text-gray-400 text-4xl font-bold">
         {thumbnailUrl ? (
-          <img src={thumbnailUrl} alt="Artwork" className="object-cover w-full h-full" />
+          <img src={thumbnailUrl} alt={track.title || track.name || "Artwork"} className="object-cover w-full h-full" />
         ) : track.artwork ? (
-          <img src={URL.createObjectURL(track.artwork)} alt="Artwork" className="object-cover w-full h-full" />
+          <img src={URL.createObjectURL(track.artwork)} alt={track.title || track.name || "Artwork"} className="object-cover w-full h-full" />
         ) : (
           <span>{t("no_artwork")}</span>
         )}
@@ -83,7 +83,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         >
           {isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
         </button>
-        {error && <p className="text-red-500 text-sm mt-2" role="alert">{t("error")}: {error}</p>}
+        {error && <p className="text-red-500 text-sm mt-2" role="alert" aria-live="assertive">{t("error")}: {error}</p>}
       </div>
 
       {/* Genre Select */}
