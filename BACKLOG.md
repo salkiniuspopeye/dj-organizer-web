@@ -61,7 +61,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 
 ## P2 Tasks
 
-- [ ] Docs: README.md aktualisieren — Aktualisiert die README-Datei mit Setup-Anweisungen und Projektübersicht.
+- [x] Docs: README.md aktualisieren — Aktualisiert die README-Datei mit Setup-Anweisungen und Projektübersicht.
 - [ ] Docs: CONTRIBUTING.md erweitern — Fügt weitere Richtlinien für Beitragende hinzu.
 - [ ] UI: Ladeindikatoren für lange Operationen — Zeigt Ladeindikatoren bei Operationen wie dem Indexieren großer Ordner.
 - [ ] UI: Benachrichtigungssystem — Implementiert ein System für Benutzerbenachrichtigungen (z.B. "Ordner erfolgreich indexiert").

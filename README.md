@@ -32,18 +32,43 @@ To build a browser-based DJ library organizer to tag tracks (exactly one main ge
 - **PWA**: `vite-plugin-pwa`
 - **Internationalization**: `i18next`, `react-i18next`, `i18next-browser-languagedetector`
 
+## Setup
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+Make sure you have Node.js (LTS version recommended) and npm installed on your machine.
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Theimbold/dj-organizer-web.git
+    cd dj-organizer-web
+    ```
+2.  **Install NPM packages:**
+    ```bash
+    npm install
+    ```
+3.  **Dropbox API Key (Optional):**
+    To enable Dropbox integration in your local development environment:
+    - Go to the [Dropbox Developers App Console](https://www.dropbox.com/developers/apps).
+    - Create a new app (choose "Scoped access" and "App folder" or "Full Dropbox" depending on your testing needs).
+    - Add `http://localhost:5173/` (or your Vite dev server URL) as a Redirect URI.
+    - Copy your App key (Client ID).
+    - Replace the placeholder `YOUR_DROPBOX_APP_CLIENT_ID` in `src/core/dropbox/dropbox.ts` with your actual Client ID.
+
+### Running the Application
+
+```bash
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) to view the application in your browser.
+
 ## Available Scripts
 
 In the project directory, you can run:
-
-### `npm install`
-
-Installs all project dependencies.
-
-### `npm run dev`
-
-Runs the app in the development mode.
-Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 
 ### `npm run build`
 
