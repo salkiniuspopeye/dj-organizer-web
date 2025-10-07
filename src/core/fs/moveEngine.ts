@@ -24,9 +24,9 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
     .anyOf(['unassigned', 'assigned'])
     .toArray();
 
-  const plan: MovePlanItem[] = [];
-  const targetPathMap = new Map<string, Track>(); // To detect path conflicts
-  const contentHashToTrackMap = new Map<string, Track>(); // To detect duplicate content
+  const planItems: MovePlanItem[] = [];
+  const targetPathMap = new Map<string, type Track>(); // To detect path conflicts
+  const contentHashToTrackMap = new Map<string, type Track>(); // To detect duplicate content
 
   for (const track of tracksToProcess) {
     let targetPath = '';
@@ -70,19 +70,28 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
       }
     }
 
-    plan.push(planItem);
+    planItems.push(planItem);
   }
 
-  return plan;
+  const movePlanId = `move-plan-${Date.now()}`;
+  await db.movePlans.add({
+    id: movePlanId,
+    planItems: planItems,
+    status: 'pending',
+    createdAt: Date.now(),
+  });
+
+  return planItems;
 }
 
-export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progress: number, total: number, currentItem: MovePlanItem) => void, signal?: AbortSignal): Promise<void> {
+export async function executeMovePlan(movePlanId: string, plan: MovePlanItem[], onProgress?: (progress: number, total: number, currentItem: MovePlanItem) => void, signal?: AbortSignal): Promise<void> {
   const rootHandle = await getDirectoryHandle(); // Get the root directory handle for local moves
   const dropboxClient = await getDropboxClient(); // Get Dropbox client for Dropbox moves
 
   let completed = 0;
   for (const item of plan) {
     if (signal?.aborted) {
+      await db.movePlans.update(movePlanId, { status: 'cancelled' });
       throw new DOMException('Move operation aborted', 'AbortError');
     }
 
@@ -139,4 +148,6 @@ export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progre
     completed++;
     onProgress?.(completed, plan.length, item);
   }
+
+  await db.movePlans.update(movePlanId, { status: 'completed', completedAt: Date.now() });
 }

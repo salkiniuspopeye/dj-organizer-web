@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { SwipeFeed } from "./features/swipe/SwipeFeed";
 import { useTranslation } from 'react-i18next';
 import { generateMovePlan, executeMovePlan, type MovePlanItem } from './core/fs/moveEngine';
 import { MoveProgressDialog } from './shared/ui/MoveProgressDialog';
-import { db } from './core/db/db';
+import { db, type MovePlan } from './core/db/db';
 
 export default function App() {
   const { t } = useTranslation();
@@ -12,6 +12,18 @@ export default function App() {
   const [moveTotal, setMoveTotal] = useState(0);
   const [currentMoveItem, setCurrentMoveItem] = useState<MovePlanItem | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [pendingMovePlan, setPendingMovePlan] = useState<MovePlan | null>(null);
+
+  // Check for pending move plans on startup
+  useEffect(() => {
+    const checkPendingMovePlans = async () => {
+      const pendingPlans = await db.movePlans.where('status').equals('pending').toArray();
+      if (pendingPlans.length > 0) {
+        setPendingMovePlan(pendingPlans[0]); // Assume only one pending plan for simplicity
+      }
+    };
+    checkPendingMovePlans();
+  }, []);
 
   const handleGenerateAndExecuteMovePlan = useCallback(async () => {
     setIsMoving(true);
@@ -52,10 +64,13 @@ export default function App() {
         ]);
       }
 
-      const plan = await generateMovePlan();
-      setMoveTotal(plan.length);
+      const planItems = await generateMovePlan();
+      const movePlan = await db.movePlans.where('status').equals('pending').last(); // Get the newly created pending plan
+      if (!movePlan) throw new Error('No pending move plan found after generation.');
 
-      await executeMovePlan(plan, (progress, total, item) => {
+      setMoveTotal(planItems.length);
+
+      await executeMovePlan(movePlan.id, planItems, (progress, total, item) => {
         setMoveProgress(progress);
         setMoveTotal(total);
         setCurrentMoveItem(item);
@@ -78,16 +93,88 @@ export default function App() {
     abortController?.abort();
   }, [abortController]);
 
+  const handleResumeMove = useCallback(async () => {
+    if (!pendingMovePlan) return;
+
+    setIsMoving(true);
+    setMoveProgress(0);
+    setMoveTotal(pendingMovePlan.planItems.length);
+    setCurrentMoveItem(null);
+
+    const controller = new AbortController();
+    setAbortController(controller);
+
+    try {
+      // Find the last completed item to resume from
+      let startIndex = 0;
+      for (let i = 0; i < pendingMovePlan.planItems.length; i++) {
+        const item = pendingMovePlan.planItems[i];
+        const track = await db.tracks.get(item.track.id);
+        if (track?.status === 'moved') {
+          startIndex = i + 1;
+        } else {
+          break;
+        }
+      }
+
+      const remainingPlanItems = pendingMovePlan.planItems.slice(startIndex);
+
+      await executeMovePlan(pendingMovePlan.id, remainingPlanItems, (progress, total, item) => {
+        setMoveProgress(startIndex + progress);
+        setMoveTotal(pendingMovePlan.planItems.length);
+        setCurrentMoveItem(item);
+      }, controller.signal);
+
+      alert('Move operation resumed and completed!');
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        alert('Move operation cancelled.');
+      } else {
+        alert(`Move operation failed: ${error.message}`);
+      }
+    } finally {
+      setIsMoving(false);
+      setAbortController(null);
+      setPendingMovePlan(null);
+    }
+  }, [pendingMovePlan]);
+
+  const handleDiscardMove = useCallback(async () => {
+    if (!pendingMovePlan) return;
+    await db.movePlans.delete(pendingMovePlan.id);
+    setPendingMovePlan(null);
+    alert('Pending move plan discarded.');
+  }, [pendingMovePlan]);
+
   return (
     <div className="p-4 rounded-xl bg-indigo-600 text-white">
       {t("app_title")}
       <button
         onClick={handleGenerateAndExecuteMovePlan}
-        disabled={isMoving}
+        disabled={isMoving || !!pendingMovePlan}
         className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
       >
         {isMoving ? 'Moving...' : 'Generate & Execute Move Plan'}
       </button>
+
+      {pendingMovePlan && (
+        <div className="mt-4 p-4 bg-yellow-600 rounded-lg">
+          <p className="text-white mb-2">A pending move operation was found.</p>
+          <button
+            onClick={handleResumeMove}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+          >
+            Resume Move
+          </button>
+          <button
+            onClick={handleDiscardMove}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Discard Move
+          </button>
+        </div>
+      )}
+
       <MoveProgressDialog
         isOpen={isMoving}
         progress={moveProgress}

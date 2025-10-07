@@ -38,6 +38,14 @@ export interface Genre {
   name: string;
 }
 
+export interface MovePlan {
+  id: string; // A unique ID for the plan, e.g., a timestamp or UUID
+  planItems: MovePlanItem[];
+  status: 'pending' | 'completed' | 'cancelled';
+  createdAt: number;
+  completedAt?: number;
+}
+
 export const moods = {
   BANGER: { color: 'red', icon: '🔥' },
   ENERGY: { color: 'orange', icon: '⚡️' },
@@ -52,6 +60,7 @@ export class MySubClassedDexie extends Dexie {
   tracks!: Table<Track>;
   librarySources!: Table<LibrarySource>;
   genres!: Table<Genre>;
+  movePlans!: Table<MovePlan>;
 
   constructor() {
     super('djOrganizer');
@@ -59,6 +68,7 @@ export class MySubClassedDexie extends Dexie {
       tracks: 'id, name, genre, mood, status, source',
       librarySources: '++id, type, name',
       genres: '++id, &name',
+      movePlans: 'id',
     });
   }
 }
