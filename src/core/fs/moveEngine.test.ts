@@ -88,7 +88,7 @@ describe('Move Engine', () => {
     });
 
     it('should resolve path conflicts by adding a suffix', async () => {
-      const mockTracks: type Track[] = [
+      const mockTracks: Track[] = [
         {
           id: '1',
           name: 'Track 1.mp3',
