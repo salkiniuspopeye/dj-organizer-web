@@ -52,7 +52,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Test: Unit-Tests für MoveEngine erweitern — Fügt weitere Unit-Tests für die MoveEngine hinzu.
 - [x] Core: Dropbox-API-Authentifizierung — Implementiert die OAuth-Authentifizierung für Dropbox.
 - [x] Core: Dropbox-Dateiliste abrufen — Implementiert das Abrufen von Dateien aus Dropbox.
-- [ ] Test: E2E-Tests für Kernfunktionen — Schreibt End-to-End-Tests für wichtige Benutzerflows.
+- [x] Test: E2E-Tests für Kernfunktionen — Schreibt End-to-End-Tests für wichtige Benutzerflows.
 - [ ] Test: Unit-Tests für Indexer — Fügt Unit-Tests für die Indexer-Logik hinzu.
 - [ ] A11y: Tastaturnavigation verbessern — Stellt sicher, dass die App vollständig über die Tastatur bedienbar ist.
 - [ ] A11y: ARIA-Labels für UI-Elemente — Fügt ARIA-Labels für eine bessere Screenreader-Unterstützung hinzu.
