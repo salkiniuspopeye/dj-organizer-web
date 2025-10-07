@@ -155,7 +155,42 @@ describe('Move Engine', () => {
       expect(plan).toHaveLength(2);
       expect(plan[0].conflict).toBeUndefined();
       expect(plan[1].conflict).toBe('duplicate_content');
-      expect(plan[1].conflictReason).toContain('identical content');
+      expect(plan[1].conflictReason).toContain('identical content (ID: 1, Name: Track 1.mp3)');
+    });
+
+    it('should detect duplicate content with more informative conflictReason', async () => {
+      const mockTracks: Track[] = [
+        {
+          id: '1',
+          name: 'Track 1.mp3',
+          size: 100,
+          mtime: 1678886400000,
+          source: 'local',
+          path: './Track 1.mp3',
+          genre: 'Techno',
+          mood: 'BANGER',
+          status: 'unassigned',
+        },
+        {
+          id: '2',
+          name: 'Track 2.mp3',
+          size: 100,
+          mtime: 1678886400000,
+          source: 'local',
+          path: './Track 2.mp3',
+          genre: 'House',
+          mood: 'ENERGY',
+          status: 'unassigned',
+        },
+      ];
+      (db.tracks.toArray as vi.Mock).mockResolvedValue(mockTracks);
+
+      const plan = await generateMovePlan();
+
+      expect(plan).toHaveLength(2);
+      expect(plan[0].conflict).toBeUndefined();
+      expect(plan[1].conflict).toBe('duplicate_content');
+      expect(plan[1].conflictReason).toContain('identical content (ID: 1, Name: Track 1.mp3)');
     });
   });
 
