@@ -1,61 +1,134 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+// Create a single, shared AudioContext, but lazily.
+let audioContext: AudioContext;
+function getAudioContext() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+  }
+  return audioContext;
+}
 
 interface UseAudioPreviewProps {
   src?: string | File;
-  startOffset?: number; // as a percentage, e.g., 0.35
+  startOffsetPercent?: number; // e.g., 0.35 for 35%
+  loopDuration?: number; // in seconds
 }
 
-export function useAudioPreview({ src, startOffset = 0.35 }: UseAudioPreviewProps) {
+export function useAudioPreview({
+  src,
+  startOffsetPercent = 0.35,
+  loopDuration = 20,
+}: UseAudioPreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(!!src);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioBufferRef = useRef<AudioBuffer | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const startTimeRef = useRef(0);
+  const startedAtRef = useRef(0);
+
+  const cleanupSource = useCallback(() => {
+    if (sourceRef.current) {
+      sourceRef.current.onended = null;
+      sourceRef.current.stop();
+      sourceRef.current.disconnect();
+      sourceRef.current = null;
+    }
+  }, []);
 
   useEffect(() => {
-    if (!src) return;
-
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    audioContextRef.current = audioContext;
+    if (!src) {
+      cleanupSource();
+      audioBufferRef.current = null;
+      setIsLoading(false);
+      return;
+    }
 
     const loadAudio = async () => {
-      try {
-        const response = await fetch(src instanceof File ? URL.createObjectURL(src) : src);
-        const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        setDuration(audioBuffer.duration);
+      setIsLoading(true);
+      setError(null);
+      cleanupSource();
 
-        const source = audioContext.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioContext.destination);
-        sourceRef.current = source;
+      try {
+        const context = getAudioContext();
+        const url = src instanceof File ? URL.createObjectURL(src) : src;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const decodedBuffer = await context.decodeAudioData(arrayBuffer);
+        
+        audioBufferRef.current = decodedBuffer;
+        setDuration(decodedBuffer.duration);
       } catch (e) {
         setError('Failed to load or decode audio.');
         console.error(e);
+        audioBufferRef.current = null;
       }
+      setIsLoading(false);
     };
 
     loadAudio();
 
-    return () => {
-      sourceRef.current?.stop();
-      audioContext.close();
-    };
-  }, [src]);
+    return cleanupSource;
+  }, [src, cleanupSource]);
 
-  const play = () => {
-    if (!sourceRef.current || !duration) return;
-    const startTime = duration * startOffset;
-    sourceRef.current.start(0, startTime);
+  const play = useCallback(() => {
+    if (!audioBufferRef.current || isPlaying) return;
+
+    cleanupSource(); // Clean up any previous source
+
+    const context = getAudioContext();
+    const source = context.createBufferSource();
+    source.buffer = audioBufferRef.current;
+    source.connect(context.destination);
+    sourceRef.current = source;
+
+    let startOffset = duration * startOffsetPercent;
+    // Fallback for short files
+    if (duration < 60) { // Example threshold for a "short file"
+        startOffset = Math.min(10, duration * 0.1);
+    }
+
+    source.loop = true;
+    source.loopStart = startOffset;
+    source.loopEnd = startOffset + loopDuration;
+
+    startTimeRef.current = 0; // We always start fresh
+    startedAtRef.current = context.currentTime;
+    
+    source.start(0, startOffset);
     setIsPlaying(true);
-  };
 
-  const pause = () => {
-    if (!sourceRef.current) return;
-    sourceRef.current.stop();
+    source.onended = () => {
+        if (sourceRef.current === source) {
+            setIsPlaying(false);
+        }
+    };
+
+  }, [isPlaying, duration, startOffsetPercent, loopDuration, cleanupSource]);
+
+  const pause = useCallback(() => {
+    if (!isPlaying || !sourceRef.current) return;
+    
+    const context = getAudioContext();
+    // Calculate how much time has passed
+    const elapsedTime = context.currentTime - startedAtRef.current;
+    startTimeRef.current += elapsedTime;
+
+    cleanupSource();
     setIsPlaying(false);
-  };
+  }, [isPlaying, cleanupSource]);
 
-  return { isPlaying, play, pause, duration, error };
+  const togglePlayPause = useCallback(() => {
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  }, [isPlaying, play, pause]);
+
+  return { isPlaying, isLoading, togglePlayPause, duration, error };
 }
