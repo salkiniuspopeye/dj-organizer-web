@@ -150,6 +150,14 @@ export default function App() {
     <div className="p-4 rounded-xl bg-indigo-600 text-white">
       {t("app_title")}
       <button
+        onClick={() => alert('Ordner wählen clicked!')} // Placeholder for folder picker logic
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        aria-label="Ordner wählen"
+      >
+        Ordner wählen
+      </button>
+
+      <button
         onClick={handleGenerateAndExecuteMovePlan}
         disabled={isMoving || !!pendingMovePlan}
         className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
