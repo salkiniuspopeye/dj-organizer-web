@@ -97,7 +97,7 @@ export default function App() {
             genre: 'Techno',
             mood: 'BANGER',
             status: 'assigned',
-          },
+          } as Track, // Explicitly cast to Track
           {
             id: 'test-track-2',
             name: 'Test Track 2.mp3',
@@ -108,7 +108,7 @@ export default function App() {
             genre: 'House',
             mood: 'ENERGY',
             status: 'assigned',
-          },
+          } as Track, // Explicitly cast to Track
         ]);
       }
 

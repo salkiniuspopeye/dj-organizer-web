@@ -40,7 +40,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] DB: Basismigration für Dexie-Schema — Implementiert eine grundlegende Migration für Schema-Änderungen.
 - [x] Bug: Fix TS2448/TS2454 handleIndexFolder declaration in App.tsx — Behebt Fehler bei der Deklaration von 'handleIndexFolder' in App.tsx.
 - [x] Bug: Fix TS6133 'total' unused in App.tsx — Behebt den Fehler, dass 'total' in App.tsx deklariert, aber nicht verwendet wird.
-- [ ] Bug: Fix TS2304 'Track' not found in App.tsx — Korrigiert den Fehler, dass 'Track' in App.tsx nicht gefunden wird.
+- [x] Bug: Fix TS2304 'Track' not found in App.tsx — Korrigiert den Fehler, dass 'Track' in App.tsx nicht gefunden wird.
 - [ ] Bug: Fix TS6133 'tx' unused in db.ts — Behebt den Fehler, dass 'tx' in db.ts deklariert, aber nicht verwendet wird.
 - [ ] Bug: Fix TS2304 'FileSystemPermissionMode' not found in directoryHandler.ts — Korrigiert den Fehler, dass 'FileSystemPermissionMode' in directoryHandler.ts nicht gefunden wird.
 - [ ] Bug: Fix TS2554 'ThumbnailProcessorWorker' arguments in TrackCard.tsx — Behebt den Fehler, dass 'ThumbnailProcessorWorker' in TrackCard.tsx falsche Argumente erhält.
