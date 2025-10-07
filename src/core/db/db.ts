@@ -55,7 +55,7 @@ export class MySubClassedDexie extends Dexie {
   constructor() {
     super('djOrganizer');
     this.version(1).stores({
-      tracks: '++id, name, genre, mood, status, source',
+      tracks: 'id, name, genre, mood, status, source',
       librarySources: '++id, type, name',
       genres: '++id, &name',
     });
@@ -63,3 +63,14 @@ export class MySubClassedDexie extends Dexie {
 }
 
 export const db = new MySubClassedDexie();
+
+db.on('populate', async () => {
+  const defaultGenres = [
+    { name: 'Techno' },
+    { name: 'House' },
+    { name: 'Drum & Bass' },
+    { name: 'Trance' },
+    { name: 'Ambient' },
+  ];
+  await db.genres.bulkAdd(defaultGenres);
+});
