@@ -5,6 +5,8 @@ import { generateMovePlan, executeMovePlan, type MovePlanItem } from './core/fs/
 import { MoveProgressDialog } from './shared/ui/MoveProgressDialog';
 import { db, type MovePlan } from './core/db/db';
 import { saveDirectoryHandle, loadDirectoryHandle } from './core/fs/directoryHandler';
+import { walkDirectory } from './core/fs/fileSystem';
+import { trackRepository } from './core/db/trackRepository';
 
 export default function App() {
   const { t } = useTranslation();
@@ -35,6 +37,10 @@ export default function App() {
     };
     loadHandle();
   }, []);
+
+  useEffect(() => {
+    handleIndexFolder();
+  }, [directoryHandle, handleIndexFolder]);
 
   const handleGenerateAndExecuteMovePlan = useCallback(async () => {
     setIsMoving(true);
@@ -156,6 +162,27 @@ export default function App() {
     setPendingMovePlan(null);
     alert('Pending move plan discarded.');
   }, [pendingMovePlan]);
+
+  const handleIndexFolder = useCallback(async () => {
+    if (!directoryHandle) return;
+
+    console.log('Indexing folder:', directoryHandle.name);
+    const newTracks: Track[] = [];
+    for await (const [fileHandle, relativePath] of walkDirectory(directoryHandle)) {
+      const file = await fileHandle.getFile();
+      newTracks.push({
+        id: file.name, // Use file name as ID for now, should be more robust later
+        name: file.name,
+        size: file.size,
+        mtime: file.lastModified,
+        source: 'local',
+        path: relativePath,
+        status: 'unassigned',
+      });
+    }
+    await trackRepository.saveTracks(newTracks);
+    console.log(`Indexed ${newTracks.length} tracks.`);
+  }, [directoryHandle]);
 
   return (
     <div className="p-4 rounded-xl bg-indigo-600 text-white">

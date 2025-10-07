@@ -25,4 +25,8 @@ export const trackRepository = {
   async getTracksByStatus(status: Track['status']) {
     return await db.tracks.where('status').equals(status).toArray();
   },
+
+  async saveTracks(tracks: Track[]) {
+    return await db.tracks.bulkPut(tracks);
+  },
 };
