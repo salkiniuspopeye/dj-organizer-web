@@ -1,4 +1,5 @@
-import Dexie, { type Table } from 'dexie';
+import Dexie, { Table } from 'dexie';
+import type { MovePlanItem } from '../fs/moveEngine';
 
 export interface Track {
   id: string;
@@ -69,6 +70,12 @@ export class MySubClassedDexie extends Dexie {
       librarySources: '++id, type, name',
       genres: '++id, &name',
       movePlans: 'id',
+    });
+
+    // Basic migration for future schema changes
+    this.version(2).upgrade(tx => {
+      // No schema changes in version 2 yet, but this sets up the migration path.
+      // Example: tx.table('tracks').toCollection().modify(track => track.newField = 'defaultValue');
     });
   }
 }

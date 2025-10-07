@@ -37,7 +37,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [ ] UI: "Demo-Daten laden"-Button — Fügt einen Button zum Laden von 10 Fake-Tracks hinzu.
 - [ ] DB: Demo-Daten-Generator — Implementiert die Logik zum Generieren von 10 Fake-Tracks für die IndexedDB.
 - [x] DB: Indizes für 'status', 'genre', 'mood' — Fügt die notwendigen Indizes zum Dexie-Schema hinzu.
-- [ ] DB: Basismigration für Dexie-Schema — Implementiert eine grundlegende Migration für Schema-Änderungen.
+- [x] DB: Basismigration für Dexie-Schema — Implementiert eine grundlegende Migration für Schema-Änderungen.
 
 ## P1 Tasks
 
