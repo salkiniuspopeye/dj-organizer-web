@@ -69,7 +69,7 @@ export class MySubClassedDexie extends Dexie {
       tracks: 'id, name, genre, mood, status, source',
       librarySources: '++id, type, name',
       genres: '++id, &name',
-      movePlans: 'id',
+      movePlans: 'id, status', // Add status to indexed fields
     });
 
     // Basic migration for future schema changes
