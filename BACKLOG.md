@@ -38,7 +38,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] DB: Demo-Daten-Generator — Implementiert die Logik zum Generieren von 10 Fake-Tracks für die IndexedDB.
 - [x] DB: Indizes für 'status', 'genre', 'mood' — Fügt die notwendigen Indizes zum Dexie-Schema hinzu.
 - [x] DB: Basismigration für Dexie-Schema — Implementiert eine grundlegende Migration für Schema-Änderungen.
-- [ ] Bug: Fix TS2448/TS2454 handleIndexFolder declaration in App.tsx — Behebt Fehler bei der Deklaration von 'handleIndexFolder' in App.tsx.
+- [x] Bug: Fix TS2448/TS2454 handleIndexFolder declaration in App.tsx — Behebt Fehler bei der Deklaration von 'handleIndexFolder' in App.tsx.
 - [ ] Bug: Fix TS6133 'total' unused in App.tsx — Behebt den Fehler, dass 'total' in App.tsx deklariert, aber nicht verwendet wird.
 - [ ] Bug: Fix TS2304 'Track' not found in App.tsx — Korrigiert den Fehler, dass 'Track' in App.tsx nicht gefunden wird.
 - [ ] Bug: Fix TS6133 'tx' unused in db.ts — Behebt den Fehler, dass 'tx' in db.ts deklariert, aber nicht verwendet wird.

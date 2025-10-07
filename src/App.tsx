@@ -3,7 +3,7 @@ import { SwipeFeed } from "./features/swipe/SwipeFeed";
 import { useTranslation } from 'react-i18next';
 import { generateMovePlan, executeMovePlan, type MovePlanItem } from './core/fs/moveEngine';
 import { MoveProgressDialog } from './shared/ui/MoveProgressDialog';
-import { db, type MovePlan } from './core/db/db';
+import { db, type MovePlan, type Track } from './core/db/db';
 import { saveDirectoryHandle, loadDirectoryHandle } from './core/fs/directoryHandler';
 import { walkDirectory } from './core/fs/fileSystem';
 import { trackRepository } from './core/db/trackRepository';
@@ -18,6 +18,27 @@ export default function App() {
   const [pendingMovePlan, setPendingMovePlan] = useState<MovePlan | null>(null);
   const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
   const [trackCount, setTrackCount] = useState(0);
+
+  const handleIndexFolder = useCallback(async () => {
+    if (!directoryHandle) return;
+
+    console.log('Indexing folder:', directoryHandle.name);
+    const newTracks: Track[] = [];
+    for await (const [fileHandle, relativePath] of walkDirectory(directoryHandle)) {
+      const file = await fileHandle.getFile();
+      newTracks.push({
+        id: file.name, // Use file name as ID for now, should be more robust later
+        name: file.name,
+        size: file.size,
+        mtime: file.lastModified,
+        source: 'local',
+        path: relativePath,
+        status: 'unassigned',
+      });
+    }
+    await trackRepository.saveTracks(newTracks);
+    console.log(`Indexed ${newTracks.length} tracks.`);
+  }, [directoryHandle]);
 
   // Check for pending move plans on startup
   useEffect(() => {
@@ -172,27 +193,6 @@ export default function App() {
     setPendingMovePlan(null);
     alert('Pending move plan discarded.');
   }, [pendingMovePlan]);
-
-  const handleIndexFolder = useCallback(async () => {
-    if (!directoryHandle) return;
-
-    console.log('Indexing folder:', directoryHandle.name);
-    const newTracks: Track[] = [];
-    for await (const [fileHandle, relativePath] of walkDirectory(directoryHandle)) {
-      const file = await fileHandle.getFile();
-      newTracks.push({
-        id: file.name, // Use file name as ID for now, should be more robust later
-        name: file.name,
-        size: file.size,
-        mtime: file.lastModified,
-        source: 'local',
-        path: relativePath,
-        status: 'unassigned',
-      });
-    }
-    await trackRepository.saveTracks(newTracks);
-    console.log(`Indexed ${newTracks.length} tracks.`);
-  }, [directoryHandle]);
 
   return (
     <div className="p-4 rounded-xl bg-indigo-600 text-white">
