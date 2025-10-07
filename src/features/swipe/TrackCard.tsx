@@ -31,7 +31,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
   useEffect(() => {
     if (track.artwork) {
       const generate = async () => {
-        const worker = await ThumbnailProcessorWorker();
+      const thumbnailUrl = await ThumbnailProcessorWorker.generateThumbnail(track.id, track.path);
         const url = await worker.generateThumbnail(track.artwork);
         setThumbnailUrl(url);
       };
