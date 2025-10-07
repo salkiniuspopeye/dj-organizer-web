@@ -16,7 +16,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Bug: Fix TS2552 'OffscreenAudioContext' in audioWorker.ts — Korrigiert den Fehler 'OffscreenAudioContext' in audioWorker.ts.
 - [x] Bug: Fix TS2349 'Remote<AudioProcessor>' not callable in useAudioPreview.ts — Behebt den Fehler, dass 'Remote<AudioProcessor>' in useAudioPreview.ts nicht aufrufbar ist.
 - [x] Bug: Fix TS2552 'getAudioContext' in useAudioPreview.ts — Korrigiert den Fehler 'getAudioContext' in useAudioPreview.ts.
-- [ ] Bug: Fix TS2552 'MovePlanItem' in db.ts — Korrigiert den Fehler 'MovePlanItem' in db.ts.
+- [x] Bug: Fix TS2552 'MovePlanItem' in db.ts — Korrigiert den Fehler 'MovePlanItem' in db.ts.
 - [ ] Bug: Fix TS2349 'Remote<ThumbnailProcessor>' not callable in TrackCard.tsx — Behebt den Fehler, dass 'Remote<ThumbnailProcessor>' in TrackCard.tsx nicht aufrufbar ist.
 - [ ] UI: "Ordner wählen"-Button anzeigen — Zeigt einen Button zum Auswählen eines lokalen Ordners an.
 - [ ] Core: DirectoryHandle speichern & laden — Implementiert das Speichern und Laden des DirectoryHandle für persistente Ordnerauswahl.
