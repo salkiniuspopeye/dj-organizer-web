@@ -36,7 +36,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] UI: Call-to-Action bei leerem Zustand — Zeigt eine Aufforderung an, wenn keine Tracks geladen sind.
 - [ ] UI: "Demo-Daten laden"-Button — Fügt einen Button zum Laden von 10 Fake-Tracks hinzu.
 - [ ] DB: Demo-Daten-Generator — Implementiert die Logik zum Generieren von 10 Fake-Tracks für die IndexedDB.
-- [ ] DB: Indizes für 'status', 'genre', 'mood' — Fügt die notwendigen Indizes zum Dexie-Schema hinzu.
+- [x] DB: Indizes für 'status', 'genre', 'mood' — Fügt die notwendigen Indizes zum Dexie-Schema hinzu.
 - [ ] DB: Basismigration für Dexie-Schema — Implementiert eine grundlegende Migration für Schema-Änderungen.
 
 ## P1 Tasks
