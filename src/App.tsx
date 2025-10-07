@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { generateMovePlan, executeMovePlan, type MovePlanItem } from './core/fs/moveEngine';
 import { MoveProgressDialog } from './shared/ui/MoveProgressDialog';
 import { db, type MovePlan } from './core/db/db';
+import { saveDirectoryHandle, loadDirectoryHandle } from './core/fs/directoryHandler';
 
 export default function App() {
   const { t } = useTranslation();
@@ -13,6 +14,7 @@ export default function App() {
   const [currentMoveItem, setCurrentMoveItem] = useState<MovePlanItem | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [pendingMovePlan, setPendingMovePlan] = useState<MovePlan | null>(null);
+  const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
 
   // Check for pending move plans on startup
   useEffect(() => {
@@ -23,6 +25,15 @@ export default function App() {
       }
     };
     checkPendingMovePlans();
+  }, []);
+
+  // Load directory handle on startup
+  useEffect(() => {
+    const loadHandle = async () => {
+      const handle = await loadDirectoryHandle();
+      setDirectoryHandle(handle);
+    };
+    loadHandle();
   }, []);
 
   const handleGenerateAndExecuteMovePlan = useCallback(async () => {
@@ -150,7 +161,15 @@ export default function App() {
     <div className="p-4 rounded-xl bg-indigo-600 text-white">
       {t("app_title")}
       <button
-        onClick={() => alert('Ordner wählen clicked!')} // Placeholder for folder picker logic
+        onClick={async () => {
+          try {
+            const handle = await window.showDirectoryPicker();
+            await saveDirectoryHandle(handle);
+            setDirectoryHandle(handle);
+          } catch (error) {
+            console.error('Error selecting directory:', error);
+          }
+        }}
         className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         aria-label="Ordner wählen"
       >

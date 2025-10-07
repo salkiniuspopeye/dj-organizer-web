@@ -19,7 +19,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Bug: Fix TS2552 'MovePlanItem' in db.ts — Korrigiert den Fehler 'MovePlanItem' in db.ts.
 - [x] Bug: Fix TS2349 'Remote<ThumbnailProcessor>' not callable in TrackCard.tsx — Behebt den Fehler, dass 'Remote<ThumbnailProcessor>' in TrackCard.tsx nicht aufrufbar ist.
 - [x] UI: "Ordner wählen"-Button anzeigen — Zeigt einen Button zum Auswählen eines lokalen Ordners an.
-- [ ] Core: DirectoryHandle speichern & laden — Implementiert das Speichern und Laden des DirectoryHandle für persistente Ordnerauswahl.
+- [x] Core: DirectoryHandle speichern & laden — Implementiert das Speichern und Laden des DirectoryHandle für persistente Ordnerauswahl.
 - [ ] Core: Rekursives Einlesen des Ordners — Implementiert das rekursive Durchsuchen des ausgewählten Ordners nach Dateien.
 - [ ] Core: Rechte für DirectoryHandle prüfen & anfordern — Stellt sicher, dass die App die notwendigen Rechte für den Zugriff auf den Ordner hat.
 - [ ] Core: Nur Audio-Dateien filtern — Implementiert die Logik, um nur Audio-Dateien aus dem Ordner zu identifizieren.
