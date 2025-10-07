@@ -2,7 +2,7 @@ import { SwipeFeed } from './features/swipe/SwipeFeed';
 
 function App() {
   return (
-    <div className="bg-slate-800">
+    <div className="p-4 rounded-xl bg-indigo-600 text-white">Tailwind v4 läuft 🎉</div>
       <SwipeFeed />
     </div>
   );
