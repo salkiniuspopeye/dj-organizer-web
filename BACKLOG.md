@@ -31,7 +31,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Core: useAudioPreview Hook erstellen — Implementiert einen React Hook für die Audio-Vorschau.
 - [x] Core: Preview-Start bei 35% der Dauer — Stellt sicher, dass die Audio-Vorschau bei 35% der Track-Dauer beginnt.
 - [x] Core: Preview-Loop (20-30s) — Implementiert eine Schleife für die Audio-Vorschau von 20-30 Sekunden.
-- [ ] Core: Preview Stop/Cleanup — Implementiert die Logik zum Stoppen und Aufräumen der Audio-Vorschau.
+- [x] Core: Preview Stop/Cleanup — Implementiert die Logik zum Stoppen und Aufräumen der Audio-Vorschau.
 - [ ] UI: Preview-Steuerung in TrackCard — Fügt UI-Elemente zur TrackCard hinzu, um die Vorschau zu starten/stoppen.
 - [ ] UI: Call-to-Action bei leerem Zustand — Zeigt eine Aufforderung an, wenn keine Tracks geladen sind.
 - [ ] UI: "Demo-Daten laden"-Button — Fügt einen Button zum Laden von 10 Fake-Tracks hinzu.
