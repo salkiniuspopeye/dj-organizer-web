@@ -88,38 +88,28 @@ We use ESLint and Prettier to enforce a consistent code style. Please make sure 
   npm run format
   ```
 
-## Commit Message Guidelines
+## Code of Conduct
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This helps us maintain a clear commit history and automate changelog generation. Please use the following format:
+This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [your contact person or email].
 
-```
-<type>(<scope>): <subject>
+## Mini-Task Workflow
 
-[body]
+For each mini-task, follow these steps:
 
-[footer]
-```
+1.  **Branching**: Create a new branch from `dev` using the format `feature/<slug-for-task>`.
+2.  **Implement Changes**: Make the necessary code changes to complete the task.
+3.  **Verify**: Run `npm run build` and `npm run test` to ensure everything is working correctly and no regressions have been introduced.
+4.  **Commit & Push**:
+    ```bash
+    git add -A
+    git commit -m "<kurzer Commit-Nachricht, die den Task beschreibt>"
+    git push -u origin HEAD
+    ```
+5.  **Summarize**: Provide a brief summary of your work, including:
+    *   The completed task from `BACKLOG.md`.
+    *   The branch name.
+    *   A list of files changed.
+    *   The build and test status (e.g., "Build successful, all tests passed").
+    *   A short excerpt of the `git diff` for the changes.
+6.  **Pause**: Wait for a "Weiter"-signal from the reviewer before proceeding with the next task.
 
-**Type**: Must be one of the following:
-
-- `feat`: A new feature
-- `fix`: A bug fix
-- `docs`: Documentation only changes
-- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
-- `refactor`: A code change that neither fixes a bug nor adds a feature
-- `perf`: A code change that improves performance
-- `test`: Adding missing tests or correcting existing tests
-- `build`: Changes that affect the build system or external dependencies (example scopes: vite, npm)
-- `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Actions)
-- `chore`: Other changes that don't modify src or test files
-- `revert`: Reverts a previous commit
-
-**Scope (optional)**: The scope should indicate the part of the codebase affected (e.g., `swipe`, `audio`, `db`, `fs`, `dropbox`, `i18n`, `docs`, `tests`).
-
-**Subject**: A very brief description of the change.
-
-**Example**:
-
-```
-feat(swipe): implement TrackCard and SwipeFeed components
-```

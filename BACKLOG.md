@@ -1,0 +1,15 @@
+- [ ] UI: Source-Picker-Buttons für Local/Dropbox implementieren — Ermöglicht dem Benutzer die Auswahl seiner Musikquelle.
+- [ ] UI: Track-Metadaten in TrackCard anzeigen — Zeigt Artist, Titel und BPM auf der Swipe-Karte an.
+- [ ] UI: Audio-Thumbnail in TrackCard visualisieren — Stellt die generierte Wellenform des Tracks dar.
+- [ ] DB: Dexie-Schema für Tracks erweitern — Fügt Felder wie `bpm`, `key`, `rating` zum Track-Objekt hinzu.
+- [ ] DB: Demo-Daten-Seeding-Funktion erstellen — Füllt die Datenbank mit Beispieldaten für eine schnelle Entwicklung.
+- [ ] Core: Dropbox-API-Integration für Dateiliste vervollständigen — Implementiert das Abrufen der Dateistruktur aus einem Dropbox-Ordner.
+- [ ] Core: Grundlegende Tagging-Aktion implementieren — Ermöglicht das Hinzufügen und Entfernen von einfachen Text-Tags zu einem Track.
+- [ ] Test: Unit-Tests für MoveEngine hinzufügen (case: file exists) — Deckt den Fall ab, dass eine Zieldatei bereits existiert.
+- [ ] Test: E2E-Test für den Swipe-Vorgang schreiben — Simuliert das Swipen einer Karte nach links und rechts in Playwright.
+- [ ] Refactor: App.tsx in Layouts/Views aufteilen — Verbessert die Code-Struktur für die Verwaltung verschiedener App-Zustände.
+- [ ] Build: Prettier-Hook für pre-commit einrichten — Stellt sicher, dass Code vor dem Commit automatisch formatiert wird.
+- [ ] Style: Lade-Spinner beim Analysieren von Tracks anzeigen — Gibt dem Benutzer visuelles Feedback während der Audioverarbeitung.
+- [ ] Bug: Falsche `type`-Deklaration in `useAudioPreview` beheben — Korrigiert einen potenziellen TypeScript-Fehler in Generics.
+- [ ] Docs: Readme mit Setup-Anweisungen aktualisieren — Beschreibt, wie das Projekt lokal aufgesetzt und ausgeführt wird.
+- [ ] Core: Export-Funktion für Playlisten implementieren — Ermöglicht den Export einer Liste von Tracks als Text- oder CSV-Datei.

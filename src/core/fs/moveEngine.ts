@@ -1,4 +1,5 @@
-import { db, type Track } from '../db/db';
+import { db } from '../db/db';
+import type { Track } from '../db/db';
 import { buildTargetPath } from './pathBuilder';
 import {
   getDirectoryHandle,
@@ -25,8 +26,8 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
     .toArray();
 
   const planItems: MovePlanItem[] = [];
-  const targetPathMap = new Map<string, type Track>(); // To detect path conflicts
-  const contentHashToTrackMap = new Map<string, type Track>(); // To detect duplicate content
+  const targetPathMap = new Map<string, Track>();
+  const contentHashToTrackMap = new Map<string, Track>(); // To detect duplicate content
 
   for (const track of tracksToProcess) {
     let targetPath = '';
