@@ -46,7 +46,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Bug: Fix TS2554 'ThumbnailProcessorWorker' arguments in TrackCard.tsx — Behebt den Fehler, dass 'ThumbnailProcessorWorker' in TrackCard.tsx falsche Argumente erhält.
 - [x] Bug: Fix TS2552 'worker' not found in TrackCard.tsx — Korrigiert den Fehler, dass 'worker' in TrackCard.tsx nicht gefunden wird.
 
-- [ ] Bug: Fix Vitest module resolution for test files — Korrigiert die Modulauflösung in Vitest für Testdateien.
+- [ ] Bug: Fix Vitest module resolution for test files (BLOCKED: Requires manual configuration change in vite.config.ts) — Korrigiert die Modulauflösung in Vitest für Testdateien.
 
 ## P1 Tasks
 
