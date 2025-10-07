@@ -169,7 +169,7 @@ export default function App() {
 
       await executeMovePlan(pendingMovePlan.id, remainingPlanItems, (progress, total, item) => {
         setMoveProgress(startIndex + progress);
-        setMoveTotal(pendingMovePlan.planItems.length);
+        setMoveTotal(total); // Use the 'total' parameter from the callback
         setCurrentMoveItem(item);
       }, controller.signal);
 
