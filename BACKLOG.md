@@ -20,7 +20,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Bug: Fix TS2349 'Remote<ThumbnailProcessor>' not callable in TrackCard.tsx — Behebt den Fehler, dass 'Remote<ThumbnailProcessor>' in TrackCard.tsx nicht aufrufbar ist.
 - [x] UI: "Ordner wählen"-Button anzeigen — Zeigt einen Button zum Auswählen eines lokalen Ordners an.
 - [x] Core: DirectoryHandle speichern & laden — Implementiert das Speichern und Laden des DirectoryHandle für persistente Ordnerauswahl.
-- [x] Core: Rekursives Einlesen des Ordners — Implementiert das rekursive Durchsuchen des ausgewählten Ordners nach Dateien.
+- [x] Core: Rekursives Einlesen des Ordners — Implementiert das rekursives Durchsuchen des ausgewählten Ordners nach Dateien.
 - [x] Core: Rechte für DirectoryHandle prüfen & anfordern — Stellt sicher, dass die App die notwendigen Rechte für den Zugriff auf den Ordner hat.
 - [x] Core: Nur Audio-Dateien filtern — Implementiert die Logik, um nur Audio-Dateien aus dem Ordner zu identifizieren.
 - [x] Core: .aiff-Unterstützung im Indexer — Erweitert den Indexer, um .aiff-Dateien korrekt zu verarbeiten.
@@ -34,10 +34,17 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Core: Preview Stop/Cleanup — Implementiert die Logik zum Stoppen und Aufräumen der Audio-Vorschau.
 - [x] UI: Preview-Steuerung in TrackCard — Fügt UI-Elemente zur TrackCard hinzu, um die Vorschau zu starten/stoppen.
 - [x] UI: Call-to-Action bei leerem Zustand — Zeigt eine Aufforderung an, wenn keine Tracks geladen sind.
-- [ ] UI: "Demo-Daten laden"-Button — Fügt einen Button zum Laden von 10 Fake-Tracks hinzu.
-- [ ] DB: Demo-Daten-Generator — Implementiert die Logik zum Generieren von 10 Fake-Tracks für die IndexedDB.
+- [x] UI: "Demo-Daten laden"-Button — Fügt einen Button zum Laden von 10 Fake-Tracks hinzu.
+- [x] DB: Demo-Daten-Generator — Implementiert die Logik zum Generieren von 10 Fake-Tracks für die IndexedDB.
 - [x] DB: Indizes für 'status', 'genre', 'mood' — Fügt die notwendigen Indizes zum Dexie-Schema hinzu.
 - [x] DB: Basismigration für Dexie-Schema — Implementiert eine grundlegende Migration für Schema-Änderungen.
+- [ ] Bug: Fix TS2448/TS2454 handleIndexFolder declaration in App.tsx — Behebt Fehler bei der Deklaration von 'handleIndexFolder' in App.tsx.
+- [ ] Bug: Fix TS6133 'total' unused in App.tsx — Behebt den Fehler, dass 'total' in App.tsx deklariert, aber nicht verwendet wird.
+- [ ] Bug: Fix TS2304 'Track' not found in App.tsx — Korrigiert den Fehler, dass 'Track' in App.tsx nicht gefunden wird.
+- [ ] Bug: Fix TS6133 'tx' unused in db.ts — Behebt den Fehler, dass 'tx' in db.ts deklariert, aber nicht verwendet wird.
+- [ ] Bug: Fix TS2304 'FileSystemPermissionMode' not found in directoryHandler.ts — Korrigiert den Fehler, dass 'FileSystemPermissionMode' in directoryHandler.ts nicht gefunden wird.
+- [ ] Bug: Fix TS2554 'ThumbnailProcessorWorker' arguments in TrackCard.tsx — Behebt den Fehler, dass 'ThumbnailProcessorWorker' in TrackCard.tsx falsche Argumente erhält.
+- [ ] Bug: Fix TS2552 'worker' not found in TrackCard.tsx — Korrigiert den Fehler, dass 'worker' in TrackCard.tsx nicht gefunden wird.
 
 ## P1 Tasks
 
