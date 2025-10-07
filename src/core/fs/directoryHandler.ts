@@ -1,3 +1,4 @@
+declare type FileSystemPermissionMode = 'read' | 'readwrite'; // Declare the type locally
 const DIRECTORY_HANDLE_KEY = 'directoryHandle';
 
 export async function saveDirectoryHandle(handle: FileSystemDirectoryHandle) {
