@@ -82,6 +82,29 @@ export async function* walkDirectory(
 }
 
 /**
+ * Retrieves a FileSystemFileHandle from a relative path within a root directory handle.
+ * @param rootHandle The root directory handle.
+ * @param relativePath The relative path to the file.
+ * @returns The FileSystemFileHandle.
+ */
+export async function getFileHandleFromPath(
+  rootHandle: FileSystemDirectoryHandle,
+  relativePath: string
+): Promise<FileSystemFileHandle> {
+  const pathParts = relativePath.split('/');
+  const fileName = pathParts.pop();
+  if (!fileName) {
+    throw new Error('Invalid relative path');
+  }
+
+  let currentDirHandle: FileSystemDirectoryHandle = rootHandle;
+  for (const part of pathParts) {
+    currentDirHandle = await currentDirHandle.getDirectoryHandle(part);
+  }
+  return await currentDirHandle.getFileHandle(fileName);
+}
+
+/**
  * Moves a file from a source handle to a target path within a root directory.
  * This is a simplified move. A robust implementation is needed in the "Move Engine".
  * @param rootHandle The root directory handle.

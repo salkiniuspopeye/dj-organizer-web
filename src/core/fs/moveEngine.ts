@@ -19,6 +19,7 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
 
   const plan: MovePlanItem[] = [];
   const targetPathMap = new Map<string, Track>(); // To detect path conflicts
+  const contentHashToTrackMap = new Map<string, Track>(); // To detect duplicate content
 
   for (const track of tracksToProcess) {
     let targetPath = '';
@@ -46,8 +47,17 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
       targetPathMap.set(targetPath, track);
     }
 
-    // TODO: Implement duplicate content detection (hash/size/mtime)
-    // For now, we'll just add the item to the plan.
+    // Check for duplicate content (size + mtime)
+    if (track.size && track.mtime) {
+      const contentHash = `${track.size}-${track.mtime}`;
+      if (contentHashToTrackMap.has(contentHash) && targetPathMap.has(targetPath)) {
+        planItem.conflict = 'duplicate_content';
+        planItem.conflictReason = `A track with identical content (${contentHashToTrackMap.get(contentHash)?.name}) is already planned for this path.`;
+      } else {
+        contentHashToTrackMap.set(contentHash, track);
+      }
+    }
+
     plan.push(planItem);
   }
 
@@ -67,13 +77,16 @@ export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progre
 
     try {
       if (item.track.source === 'local') {
-        // For local files, we need the actual FileSystemFileHandle
-        // This is a simplified approach. A real implementation would need to find the handle from the rootHandle.
-        // For now, we'll assume we can get the file content and write it to the new location.
-        // This is a copy-then-delete strategy, not a true move.
-        const sourceFile = await (await rootHandle.getFileHandle(item.sourcePath)).getFile();
-        await fsMoveFile(rootHandle, sourceFile, item.targetPath);
-        // TODO: Delete original file after successful copy
+        const sourceFileHandle = await getFileHandleFromPath(rootHandle, item.sourcePath);
+        await fsMoveFile(rootHandle, sourceFileHandle, item.targetPath);
+        
+        // Delete original file after successful copy
+        const sourcePathParts = item.sourcePath.split('/');
+        const sourceFileName = sourcePathParts.pop();
+        const sourceParentPath = sourcePathParts.join('/');
+        const sourceParentDirHandle = sourceParentPath ? await rootHandle.getDirectoryHandle(sourceParentPath) : rootHandle;
+        await sourceParentDirHandle.removeEntry(sourceFileName);
+
         console.log(`Moved local file: ${item.sourcePath} to ${item.targetPath}`);
       } else if (item.track.source === 'dropbox' && dropboxClient) {
         await dropboxMoveFile(dropboxClient, item.sourcePath, item.targetPath);

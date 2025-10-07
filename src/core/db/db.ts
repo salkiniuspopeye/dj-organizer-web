@@ -4,6 +4,7 @@ export interface Track {
   id: string;
   name: string;
   size: number;
+  mtime?: number; // Modification time in milliseconds
   duration?: number;
   bitrate?: number;
   samplerate?: number;
