@@ -63,9 +63,9 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
     // Check for duplicate content (size + mtime)
     if (track.size && track.mtime) {
       const contentHash = `${track.size}-${track.mtime}`;
-      if (contentHashToTrackMap.has(contentHash) && targetPathMap.has(planItem.targetPath)) {
+      if (contentHashToTrackMap.has(contentHash)) {
         planItem.conflict = 'duplicate_content';
-        planItem.conflictReason = `A track with identical content (${contentHashToTrackMap.get(contentHash)?.name}) is already planned for this path.`;
+        planItem.conflictReason = `A track with identical content (ID: ${contentHashToTrackMap.get(contentHash)?.id}, Name: ${contentHashToTrackMap.get(contentHash)?.name}) is already planned or exists.`;
       } else {
         contentHashToTrackMap.set(contentHash, track);
       }

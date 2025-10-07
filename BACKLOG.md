@@ -41,7 +41,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 
 ## P1 Tasks
 
-- [ ] Core: MoveEngine-Logik verfeinern — Verbessert die bestehende MoveEngine-Logik (z.B. Konfliktlösung).
+- [x] Core: MoveEngine-Logik verfeinern — Verbessert die bestehende MoveEngine-Logik (z.B. Konfliktlösung).
 - [ ] Test: Unit-Tests für MoveEngine erweitern — Fügt weitere Unit-Tests für die MoveEngine hinzu.
 - [ ] Core: Dropbox-API-Authentifizierung — Implementiert die OAuth-Authentifizierung für Dropbox.
 - [ ] Core: Dropbox-Dateiliste abrufen — Implementiert das Abrufen von Dateien aus Dropbox.
