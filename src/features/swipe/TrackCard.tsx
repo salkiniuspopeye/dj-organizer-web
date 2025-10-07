@@ -1,5 +1,5 @@
 import React from 'react';
-import { Track, moods, Genre } from '../../core/db/db';
+import { type Track, moods, type Genre } from '../../core/db/db';
 import { useAudioPreview } from '../../core/audio/useAudioPreview';
 import { useTranslation } from 'react-i18next';
 

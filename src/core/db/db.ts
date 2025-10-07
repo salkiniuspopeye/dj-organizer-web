@@ -1,4 +1,4 @@
-import Dexie, { Table } from 'dexie';
+import Dexie, { type Table } from 'dexie';
 
 export interface Track {
   id: string;
@@ -14,7 +14,7 @@ export interface Track {
   key?: string;
   artwork?: Blob;
   source: 'local' | 'dropbox';
-  path: string; // local relative path
+  path?: string; // local relative path
   dropboxPathLower?: string;
   genre?: string;
   mood?: 'BANGER' | 'ENERGY' | 'GROOVE' | 'WARMUP' | 'AFTERHOUR';

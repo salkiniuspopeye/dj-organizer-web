@@ -1,5 +1,5 @@
 import { buildTargetPath } from './pathBuilder';
-import { Track } from '../db/db';
+import type { Track } from '../db/db';
 
 describe('buildTargetPath', () => {
   it('should build the correct path', () => {

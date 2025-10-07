@@ -1,4 +1,3 @@
-import React from "react";
 import { SwipeFeed } from "./features/swipe/SwipeFeed";
 import { useTranslation } from 'react-i18next';
 

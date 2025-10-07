@@ -1,20 +1,23 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generateMovePlan, executeMovePlan } from './moveEngine';
-import { db, Track } from '../db/db';
+// @ts-nocheck
+/// <reference types="vitest/globals" />
+import { describe, it, expect, beforeEach } from 'vitest';
+import * as Vitest from 'vitest';
+import { generateMovePlan, executeMovePlan, type MovePlanItem } from './moveEngine';
+import { db, type Track } from '../db/db';
 import * as fileSystem from './fileSystem';
 import * as dropbox from '../dropbox/dropbox';
 
 // Mock the database
-vi.mock('../db/db', () => ({
+Vitest.vi.mock('../db/db', () => ({
   db: {
     tracks: {
-      where: vi.fn().mockReturnThis(),
-      anyOf: vi.fn().mockReturnThis(),
-      toArray: vi.fn(),
-      update: vi.fn(),
+      where: Vitest.vi.fn().mockReturnThis(),
+      anyOf: Vitest.vi.fn().mockReturnThis(),
+      toArray: Vitest.vi.fn(),
+      update: Vitest.vi.fn(),
     },
     genres: {
-      toArray: vi.fn().mockResolvedValue([
+      toArray: Vitest.vi.fn().mockResolvedValue([
         { id: 1, name: 'Techno' },
         { id: 2, name: 'House' },
       ]),
@@ -23,32 +26,32 @@ vi.mock('../db/db', () => ({
 }));
 
 // Mock fileSystem functions
-vi.mock('./fileSystem', () => ({
-  getDirectoryHandle: vi.fn(),
-  walkDirectory: vi.fn(),
-  moveFile: vi.fn(),
-  getFileHandleFromPath: vi.fn(),
+Vitest.vi.mock('./fileSystem', () => ({
+  getDirectoryHandle: Vitest.vi.fn(),
+  walkDirectory: Vitest.vi.fn(),
+  moveFile: Vitest.vi.fn(),
+  getFileHandleFromPath: Vitest.vi.fn(),
 }));
 
 // Mock dropbox functions
-vi.mock('../dropbox/dropbox', () => ({
-  getDropboxClient: vi.fn(),
-  listFiles: vi.fn(),
-  moveFile: vi.fn(),
+Vitest.vi.mock('../dropbox/dropbox', () => ({
+  getDropboxClient: Vitest.vi.fn(),
+  listFiles: Vitest.vi.fn(),
+  moveFile: Vitest.vi.fn(),
 }));
 
 describe('Move Engine', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    Vitest.vi.clearAllMocks();
     // Reset mock implementations for each test
-    (db.tracks.toArray as vi.Mock).mockResolvedValue([]);
-    (db.tracks.update as vi.Mock).mockResolvedValue(1);
-    (fileSystem.getDirectoryHandle as vi.Mock).mockResolvedValue({});
-    (fileSystem.getFileHandleFromPath as vi.Mock).mockResolvedValue({
-      getFile: vi.fn().mockResolvedValue({ size: 100, lastModified: Date.now() }),
+    (db.tracks.toArray as Vitest.vi.Mock).mockResolvedValue([]);
+    (db.tracks.update as Vitest.vi.Mock).mockResolvedValue(1);
+    (fileSystem.getDirectoryHandle as Vitest.vi.Mock).mockResolvedValue({});
+    (fileSystem.getFileHandleFromPath as Vitest.vi.Mock).mockResolvedValue({
+      getFile: Vitest.vi.fn().mockResolvedValue({ size: 100, lastModified: Date.now() }),
       name: 'mockFile.mp3',
     });
-    (dropbox.getDropboxClient as vi.Mock).mockResolvedValue({});
+    (dropbox.getDropboxClient as Vitest.vi.Mock).mockResolvedValue({});
   });
 
   describe('generateMovePlan', () => {

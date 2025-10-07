@@ -1,11 +1,11 @@
-import { db, Track } from '../db/db';
+import { db, type Track } from '../db/db';
 import { buildTargetPath } from './pathBuilder';
-import { getDirectoryHandle, walkDirectory, moveFile as fsMoveFile, getFileHandleFromPath } from './fileSystem';
+import { getDirectoryHandle, moveFile as fsMoveFile, getFileHandleFromPath } from './fileSystem';
 import { getDropboxClient, moveFile as dropboxMoveFile } from '../dropbox/dropbox';
 
 export interface MovePlanItem {
   track: Track;
-  sourcePath: string;
+  sourcePath?: string;
   targetPath: string;
   conflict?: 'path_exists' | 'duplicate_content';
   conflictReason?: string;
@@ -77,18 +77,34 @@ export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progre
 
     try {
       if (item.track.source === 'local') {
+        if (!item.sourcePath) {
+          console.warn(`Skipping local move for track ${item.track.name}: sourcePath is undefined.`);
+          continue;
+        }
         const sourceFileHandle = await getFileHandleFromPath(rootHandle, item.sourcePath);
         await fsMoveFile(rootHandle, sourceFileHandle, item.targetPath);
         
         // Delete original file after successful copy
         const sourcePathParts = item.sourcePath.split('/');
         const sourceFileName = sourcePathParts.pop();
+        if (!sourceFileName) {
+          throw new Error('Could not determine source file name for deletion.');
+        }
         const sourceParentPath = sourcePathParts.join('/');
-        const sourceParentDirHandle = sourceParentPath ? await rootHandle.getDirectoryHandle(sourceParentPath) : rootHandle;
+        let sourceParentDirHandle: FileSystemDirectoryHandle;
+        if (sourceParentPath) {
+          sourceParentDirHandle = await rootHandle.getDirectoryHandle(sourceParentPath);
+        } else {
+          sourceParentDirHandle = rootHandle;
+        }
         await sourceParentDirHandle.removeEntry(sourceFileName);
 
         console.log(`Moved local file: ${item.sourcePath} to ${item.targetPath}`);
       } else if (item.track.source === 'dropbox' && dropboxClient) {
+        if (!item.sourcePath) {
+          console.warn(`Skipping Dropbox move for track ${item.track.name}: sourcePath is undefined.`);
+          continue;
+        }
         await dropboxMoveFile(dropboxClient, item.sourcePath, item.targetPath);
         console.log(`Moved Dropbox file: ${item.sourcePath} to ${item.targetPath}`);
       }

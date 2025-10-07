@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, Track, Genre, moods } from '../../core/db/db';
+import { db, type Track, type Genre, moods } from '../../core/db/db';
 import { TrackCard } from './TrackCard';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useTranslation } from 'react-i18next';
@@ -39,17 +39,20 @@ export const SwipeFeed: React.FC = () => {
 
   // Load more items when scrolling near the end
   useEffect(() => {
-    const [lastItem] = [...virtualItems].reverse();
-    if (!lastItem) {
-      return;
-    }
+    const loadMore = async () => {
+      const [lastItem] = [...virtualItems].reverse();
+      if (!lastItem) {
+        return;
+      }
 
-    if (
-      lastItem.index >= (tracks?.length || 0) - 1 &&
-      (tracks?.length || 0) < (db.tracks.count() || 0) // Check if there are more tracks in DB
-    ) {
-      setOffset((prevOffset) => prevOffset + PAGE_SIZE);
-    }
+      if (
+        lastItem.index >= (tracks?.length || 0) - 1 &&
+        (tracks?.length || 0) < (await db.tracks.count() || 0) // Check if there are more tracks in DB
+      ) {
+        setOffset((prevOffset) => prevOffset + PAGE_SIZE);
+      }
+    };
+    loadMore();
   }, [virtualItems, tracks, db.tracks]); // Corrected dependency: lastItem is not a stable reference
 
   const handleGenreChange = useCallback(async (trackId: string, genre: string) => {

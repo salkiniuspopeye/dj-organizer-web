@@ -1,5 +1,5 @@
 
-import { Dropbox, files } from 'dropbox';
+import { Dropbox, type files } from 'dropbox';
 import { db } from '../db/db';
 
 const DROPBOX_CLIENT_ID = 'YOUR_DROPBOX_APP_CLIENT_ID'; // TODO: Replace with your Dropbox App Client ID
@@ -12,7 +12,7 @@ const DROPBOX_SOURCE_ID = 2; // Assuming a single dropbox source
  */
 export function authenticateWithDropbox() {
   const dbx = new Dropbox({ clientId: DROPBOX_CLIENT_ID });
-  const authUrl = dbx.auth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
+  const authUrl = (dbx as any).auth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
   window.location.href = authUrl as string;
 }
 
@@ -23,7 +23,7 @@ export async function handleDropboxRedirect() {
   const code = new URLSearchParams(window.location.search).get('code');
   if (code) {
     const dbx = new Dropbox({ clientId: DROPBOX_CLIENT_ID });
-    const response = await dbx.auth.getAccessTokenFromCode(REDIRECT_URI, code);
+    const response = await (dbx as any).auth.getAccessTokenFromCode(REDIRECT_URI, code);
     const accessToken = (response.result as any).access_token;
     const refreshToken = (response.result as any).refresh_token;
 
@@ -101,5 +101,5 @@ export async function listFiles(dbx: Dropbox, path: string): Promise<files.ListF
  */
 export async function moveFile(dbx: Dropbox, fromPath: string, toPath: string): Promise<files.FileMetadata> {
   const response = await dbx.filesMoveV2({ from_path: fromPath, to_path: toPath });
-  return response.result.metadata;
+  return response.result.metadata as files.FileMetadata;
 }

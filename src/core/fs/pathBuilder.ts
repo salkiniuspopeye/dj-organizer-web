@@ -1,4 +1,4 @@
-import { Track } from '../db/db';
+import type { Track } from '../db/db';
 
 export function buildTargetPath(track: Track, rootDir: string): string {
   if (!track.genre || !track.mood) {

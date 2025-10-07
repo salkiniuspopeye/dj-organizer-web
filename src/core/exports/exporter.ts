@@ -1,4 +1,4 @@
-import { db, Track } from '../db/db';
+import { db, type Track } from '../db/db';
 
 /**
  * Generates an M3U8 playlist string for tracks filtered by genre and/or mood.
@@ -22,7 +22,7 @@ function generateM3U8(tracks: Track[], title: string): string {
  * Exports M3U8 playlists based on genre and mood.
  * @param rootFolderName The name of the root folder for the organized library (e.g., "Finished Tracks").
  */
-export async function exportM3U8Playlists(rootFolderName: string = 'Finished Tracks') {
+export async function exportM3U8Playlists() {
   const genres = await db.genres.toArray();
   const moods = ['BANGER', 'ENERGY', 'GROOVE', 'WARMUP', 'AFTERHOUR']; // Assuming these are fixed
 
@@ -84,4 +84,33 @@ export async function exportMoveLog(format: 'csv' | 'json') {
     const headers = ['id', 'name', 'source', 'path', 'dropboxPathLower', 'genre', 'mood', 'status', 'targetPath'].join(',');
     const rows = movedTracks.map(track => [
       track.id,
-      `"${track.name.replace(/
+      `"${track.name.replace(/"/g, '""')}"`,
+      track.source,
+      `"${track.path?.replace(/"/g, '""') || ''}"`,
+      `"${track.dropboxPathLower?.replace(/"/g, '""') || ''}"`,
+      track.genre || '',
+      track.mood || '',
+      track.status,
+      `"${track.targetPath?.replace(/"/g, '""') || ''}"`,
+    ].join(','));
+    content = [headers, ...rows].join('\n');
+    filename = 'move_log.csv';
+    mimeType = 'text/csv';
+  } else if (format === 'json') {
+    content = JSON.stringify(movedTracks, null, 2);
+    filename = 'move_log.json';
+    mimeType = 'application/json';
+  } else {
+    throw new Error('Invalid export format.');
+  }
+
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
