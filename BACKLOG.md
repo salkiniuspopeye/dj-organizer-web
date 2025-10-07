@@ -23,7 +23,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Core: Rekursives Einlesen des Ordners — Implementiert das rekursive Durchsuchen des ausgewählten Ordners nach Dateien.
 - [x] Core: Rechte für DirectoryHandle prüfen & anfordern — Stellt sicher, dass die App die notwendigen Rechte für den Zugriff auf den Ordner hat.
 - [x] Core: Nur Audio-Dateien filtern — Implementiert die Logik, um nur Audio-Dateien aus dem Ordner zu identifizieren.
-- [ ] Core: .aiff-Unterstützung im Indexer — Erweitert den Indexer, um .aiff-Dateien korrekt zu verarbeiten.
+- [x] Core: .aiff-Unterstützung im Indexer — Erweitert den Indexer, um .aiff-Dateien korrekt zu verarbeiten.
 - [ ] Core: Audio-Dauer ermitteln (Web Audio API) — Nutzt die Web Audio API, um die Dauer von Audio-Dateien zu bestimmen.
 - [ ] Core: Fallback für unbekannte Audio-Dauer — Implementiert einen Fallback, wenn die Audio-Dauer nicht ermittelt werden kann (z.B. 10s oder 0.1*len).
 - [ ] DB: IndexedDB-Schema für Tracks erweitern — Fügt Felder wie 'duration' und 'sourcePath' zum Track-Schema hinzu.
