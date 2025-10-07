@@ -153,6 +153,7 @@ export default function App() {
         onClick={handleGenerateAndExecuteMovePlan}
         disabled={isMoving || !!pendingMovePlan}
         className="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        aria-label={isMoving ? 'Moving files' : 'Generate and execute move plan'}
       >
         {isMoving ? 'Moving...' : 'Generate & Execute Move Plan'}
       </button>
@@ -163,12 +164,14 @@ export default function App() {
           <button
             onClick={handleResumeMove}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+            aria-label="Resume pending move operation"
           >
             Resume Move
           </button>
           <button
             onClick={handleDiscardMove}
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            aria-label="Discard pending move operation"
           >
             Discard Move
           </button>
