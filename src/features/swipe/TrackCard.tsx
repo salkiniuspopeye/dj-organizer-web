@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { type Track, moods, type Genre } from '../../core/db/db';
 import { useAudioPreview } from '../../core/audio/useAudioPreview';
 import { useTranslation } from 'react-i18next';
+import { wrap } from 'comlink';
+import type { ThumbnailProcessor } from '../../core/audio/thumbnailWorker';
+
+const ThumbnailProcessorWorker = wrap<ThumbnailProcessor>(new Worker(new URL('../../core/audio/thumbnailWorker.ts', import.meta.url), { type: 'module' }));
 
 interface TrackCardProps {
   track: Track;
@@ -22,18 +26,31 @@ export const TrackCard: React.FC<TrackCardProps> = ({
     startOffsetPercent: 0.35,
   });
 
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (track.artwork) {
+      const generate = async () => {
+        const worker = await ThumbnailProcessorWorker();
+        const url = await worker.generateThumbnail(track.artwork);
+        setThumbnailUrl(url);
+      };
+      generate();
+    } else {
+      setThumbnailUrl(null);
+    }
+  }, [track.artwork]);
+
   return (
     <div className="relative w-full max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       {/* Artwork */}
       <div className="w-full h-80 bg-gray-700 flex items-center justify-center text-gray-400 text-4xl font-bold">
-        {track.artwork ? (
-          <img
-            src={URL.createObjectURL(track.artwork)}
-            alt="Artwork"
-            className="object-cover w-full h-full"
-          />
+        {thumbnailUrl ? (
+          <img src={thumbnailUrl} alt="Artwork" className="object-cover w-full h-full" />
+        ) : track.artwork ? (
+          <img src={URL.createObjectURL(track.artwork)} alt="Artwork" className="object-cover w-full h-full" />
         ) : (
-          <span>{t('no_artwork')}</span>
+          <span>{t("no_artwork")}</span>
         )}
       </div>
 
