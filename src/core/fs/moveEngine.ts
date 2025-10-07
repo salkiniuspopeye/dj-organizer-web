@@ -75,12 +75,16 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
   return plan;
 }
 
-export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progress: number, total: number, currentItem: MovePlanItem) => void): Promise<void> {
+export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progress: number, total: number, currentItem: MovePlanItem) => void, signal?: AbortSignal): Promise<void> {
   const rootHandle = await getDirectoryHandle(); // Get the root directory handle for local moves
   const dropboxClient = await getDropboxClient(); // Get Dropbox client for Dropbox moves
 
   let completed = 0;
   for (const item of plan) {
+    if (signal?.aborted) {
+      throw new DOMException('Move operation aborted', 'AbortError');
+    }
+
     if (item.conflict) {
       console.warn(`Skipping conflicted item: ${item.track.name} - ${item.conflictReason}`);
       completed++;
