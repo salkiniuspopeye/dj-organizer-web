@@ -8,29 +8,29 @@ To build a browser-based DJ library organizer to tag tracks (exactly one main ge
 
 ## Key Features
 
-*   **PWA Support**: Installable as a Progressive Web App for an app-like experience, with offline capabilities.
-*   **Local File Management**: Utilizes the File System Access API for persistent access to chosen local music folders, enabling direct file operations.
-*   **Dropbox Integration**: Seamlessly connect with Dropbox accounts for listing, tagging, and moving tracks in the cloud.
-*   **Audio Preview**: Instantly preview tracks with a Web Audio API-powered player, starting at 35% of the track duration and looping a segment.
-*   **Intuitive Tagging**: Assign a single genre (from a configurable list) and one of five moods (with customizable names, colors, and icons) to each track.
-*   **Smart Move Engine**: Plan and execute file moves to a structured target directory. Features include dry-run, conflict detection (path and content duplicates), and robust error handling.
-*   **Export Capabilities**: Generate M3U8 playlists (per genre/mood or combined) and export move logs in CSV/JSON formats.
-*   **Scalable UI**: Efficiently handles large music libraries (10k-50k files) with virtualized lists to maintain UI responsiveness.
-*   **Internationalization (i18n)**: Supports multiple languages (currently English and German).
+- **PWA Support**: Installable as a Progressive Web App for an app-like experience, with offline capabilities.
+- **Local File Management**: Utilizes the File System Access API for persistent access to chosen local music folders, enabling direct file operations.
+- **Dropbox Integration**: Seamlessly connect with Dropbox accounts for listing, tagging, and moving tracks in the cloud.
+- **Audio Preview**: Instantly preview tracks with a Web Audio API-powered player, starting at 35% of the track duration and looping a segment.
+- **Intuitive Tagging**: Assign a single genre (from a configurable list) and one of five moods (with customizable names, colors, and icons) to each track.
+- **Smart Move Engine**: Plan and execute file moves to a structured target directory. Features include dry-run, conflict detection (path and content duplicates), and robust error handling.
+- **Export Capabilities**: Generate M3U8 playlists (per genre/mood or combined) and export move logs in CSV/JSON formats.
+- **Scalable UI**: Efficiently handles large music libraries (10k-50k files) with virtualized lists to maintain UI responsiveness.
+- **Internationalization (i18n)**: Supports multiple languages (currently English and German).
 
 ## Tech Stack
 
-*   **Frontend**: React 18 + TypeScript, Vite
-*   **Styling**: Tailwind CSS, Headless UI
-*   **State Management**: Redux Toolkit (or Zustand) + RTK Query for Dropbox API wrapper (planned)
-*   **Local Storage**: IndexedDB via Dexie.js
-*   **Virtualization**: `@tanstack/react-virtual`
-*   **Audio Processing**: Web Audio API (for preview), `ffmpeg.wasm` (planned for duration probe fallback)
-*   **Cloud Integration**: Official Dropbox JS SDK
-*   **Testing**: Vitest (Unit), React Testing Library (Unit), Playwright (E2E)
-*   **Linting/Formatting**: ESLint, Prettier
-*   **PWA**: `vite-plugin-pwa`
-*   **Internationalization**: `i18next`, `react-i18next`, `i18next-browser-languagedetector`
+- **Frontend**: React 18 + TypeScript, Vite
+- **Styling**: Tailwind CSS, Headless UI
+- **State Management**: Redux Toolkit (or Zustand) + RTK Query for Dropbox API wrapper (planned)
+- **Local Storage**: IndexedDB via Dexie.js
+- **Virtualization**: `@tanstack/react-virtual`
+- **Audio Processing**: Web Audio API (for preview), `ffmpeg.wasm` (planned for duration probe fallback)
+- **Cloud Integration**: Official Dropbox JS SDK
+- **Testing**: Vitest (Unit), React Testing Library (Unit), Playwright (E2E)
+- **Linting/Formatting**: ESLint, Prettier
+- **PWA**: `vite-plugin-pwa`
+- **Internationalization**: `i18next`, `react-i18next`, `i18next-browser-languagedetector`
 
 ## Available Scripts
 

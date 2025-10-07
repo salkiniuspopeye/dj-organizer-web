@@ -47,28 +47,34 @@ export const SwipeFeed: React.FC = () => {
 
       if (
         lastItem.index >= (tracks?.length || 0) - 1 &&
-        (tracks?.length || 0) < (await db.tracks.count() || 0) // Check if there are more tracks in DB
+        (tracks?.length || 0) < ((await db.tracks.count()) || 0) // Check if there are more tracks in DB
       ) {
         setOffset((prevOffset) => prevOffset + PAGE_SIZE);
       }
     };
     loadMore();
-  }, [virtualItems, tracks, db.tracks]); // Corrected dependency: lastItem is not a stable reference
+  }, [virtualItems, tracks]); // Corrected dependency: lastItem is not a stable reference
 
-  const handleGenreChange = useCallback(async (trackId: string, genre: string) => {
-    await db.tracks.update(trackId, { genre, status: 'assigned' });
-  }, []);
+  const handleGenreChange = useCallback(
+    async (trackId: string, genre: string) => {
+      await db.tracks.update(trackId, { genre, status: 'assigned' });
+    },
+    []
+  );
 
-  const handleMoodChange = useCallback(async (trackId: string, mood: keyof typeof moods) => {
-    await db.tracks.update(trackId, { mood, status: 'assigned' });
-  }, []);
+  const handleMoodChange = useCallback(
+    async (trackId: string, mood: keyof typeof moods) => {
+      await db.tracks.update(trackId, { mood, status: 'assigned' });
+    },
+    []
+  );
 
   if (!tracks) {
-    return <div className="text-white">{t("loading_tracks")}</div>;
+    return <div className="text-white">{t('loading_tracks')}</div>;
   }
 
   if (tracks.length === 0) {
-    return <div className="text-white">{t("no_tracks_found")}</div>;
+    return <div className="text-white">{t('no_tracks_found')}</div>;
   }
 
   return (

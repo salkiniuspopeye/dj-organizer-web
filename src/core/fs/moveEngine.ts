@@ -1,7 +1,14 @@
 import { db, type Track } from '../db/db';
 import { buildTargetPath } from './pathBuilder';
-import { getDirectoryHandle, moveFile as fsMoveFile, getFileHandleFromPath } from './fileSystem';
-import { getDropboxClient, moveFile as dropboxMoveFile } from '../dropbox/dropbox';
+import {
+  getDirectoryHandle,
+  moveFile as fsMoveFile,
+  getFileHandleFromPath,
+} from './fileSystem';
+import {
+  getDropboxClient,
+  moveFile as dropboxMoveFile,
+} from '../dropbox/dropbox';
 
 export interface MovePlanItem {
   track: Track;
@@ -35,7 +42,8 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
 
     const planItem: MovePlanItem = {
       track,
-      sourcePath: track.source === 'local' ? track.path : track.dropboxPathLower || '',
+      sourcePath:
+        track.source === 'local' ? track.path : track.dropboxPathLower || '',
       targetPath,
     };
 
@@ -50,7 +58,10 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
     // Check for duplicate content (size + mtime)
     if (track.size && track.mtime) {
       const contentHash = `${track.size}-${track.mtime}`;
-      if (contentHashToTrackMap.has(contentHash) && targetPathMap.has(targetPath)) {
+      if (
+        contentHashToTrackMap.has(contentHash) &&
+        targetPathMap.has(targetPath)
+      ) {
         planItem.conflict = 'duplicate_content';
         planItem.conflictReason = `A track with identical content (${contentHashToTrackMap.get(contentHash)?.name}) is already planned for this path.`;
       } else {
@@ -64,26 +75,40 @@ export async function generateMovePlan(): Promise<MovePlanItem[]> {
   return plan;
 }
 
-export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progress: number, total: number, currentItem: MovePlanItem) => void): Promise<void> {
+export async function executeMovePlan(
+  plan: MovePlanItem[],
+  onProgress?: (
+    progress: number,
+    total: number,
+    currentItem: MovePlanItem
+  ) => void
+): Promise<void> {
   const rootHandle = await getDirectoryHandle(); // Get the root directory handle for local moves
   const dropboxClient = await getDropboxClient(); // Get Dropbox client for Dropbox moves
 
   let completed = 0;
   for (const item of plan) {
     if (item.conflict) {
-      console.warn(`Skipping conflicted item: ${item.track.name} - ${item.conflictReason}`);
+      console.warn(
+        `Skipping conflicted item: ${item.track.name} - ${item.conflictReason}`
+      );
       continue;
     }
 
     try {
       if (item.track.source === 'local') {
         if (!item.sourcePath) {
-          console.warn(`Skipping local move for track ${item.track.name}: sourcePath is undefined.`);
+          console.warn(
+            `Skipping local move for track ${item.track.name}: sourcePath is undefined.`
+          );
           continue;
         }
-        const sourceFileHandle = await getFileHandleFromPath(rootHandle, item.sourcePath);
+        const sourceFileHandle = await getFileHandleFromPath(
+          rootHandle,
+          item.sourcePath
+        );
         await fsMoveFile(rootHandle, sourceFileHandle, item.targetPath);
-        
+
         // Delete original file after successful copy
         const sourcePathParts = item.sourcePath.split('/');
         const sourceFileName = sourcePathParts.pop();
@@ -93,25 +118,38 @@ export async function executeMovePlan(plan: MovePlanItem[], onProgress?: (progre
         const sourceParentPath = sourcePathParts.join('/');
         let sourceParentDirHandle: FileSystemDirectoryHandle;
         if (sourceParentPath) {
-          sourceParentDirHandle = await rootHandle.getDirectoryHandle(sourceParentPath);
+          sourceParentDirHandle =
+            await rootHandle.getDirectoryHandle(sourceParentPath);
         } else {
           sourceParentDirHandle = rootHandle;
         }
         await sourceParentDirHandle.removeEntry(sourceFileName);
 
-        console.log(`Moved local file: ${item.sourcePath} to ${item.targetPath}`);
+        console.log(
+          `Moved local file: ${item.sourcePath} to ${item.targetPath}`
+        );
       } else if (item.track.source === 'dropbox' && dropboxClient) {
         if (!item.sourcePath) {
-          console.warn(`Skipping Dropbox move for track ${item.track.name}: sourcePath is undefined.`);
+          console.warn(
+            `Skipping Dropbox move for track ${item.track.name}: sourcePath is undefined.`
+          );
           continue;
         }
         await dropboxMoveFile(dropboxClient, item.sourcePath, item.targetPath);
-        console.log(`Moved Dropbox file: ${item.sourcePath} to ${item.targetPath}`);
+        console.log(
+          `Moved Dropbox file: ${item.sourcePath} to ${item.targetPath}`
+        );
       }
-      await db.tracks.update(item.track.id, { status: 'moved', targetPath: item.targetPath });
+      await db.tracks.update(item.track.id, {
+        status: 'moved',
+        targetPath: item.targetPath,
+      });
     } catch (error) {
       console.error(`Error moving track ${item.track.name}:`, error);
-      await db.tracks.update(item.track.id, { status: 'error', targetPath: item.targetPath });
+      await db.tracks.update(item.track.id, {
+        status: 'error',
+        targetPath: item.targetPath,
+      });
     }
 
     completed++;

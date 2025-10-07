@@ -8,7 +8,7 @@ import { db, type Track } from '../db/db';
  */
 function generateM3U8(tracks: Track[], title: string): string {
   let m3u8Content = `#EXTM3U\n#EXTENC:UTF-8\n#PLAYLIST:${title}\n`;
-  tracks.forEach(track => {
+  tracks.forEach((track) => {
     if (track.targetPath) {
       // Assuming targetPath is relative to the root of the organized library
       m3u8Content += `#EXTINF:${track.duration || -1},${track.artist || ''} - ${track.title || track.name}\n`;
@@ -39,7 +39,10 @@ export async function exportM3U8Playlists() {
       if (filteredTracks.length > 0) {
         const playlistTitle = `${genre.name} - ${mood}`;
         const filename = `${genre.name.replace(/ /g, '_')}_${mood}.m3u8`;
-        playlists.push({ filename, content: generateM3U8(filteredTracks, playlistTitle) });
+        playlists.push({
+          filename,
+          content: generateM3U8(filteredTracks, playlistTitle),
+        });
         combinedTracks = combinedTracks.concat(filteredTracks);
       }
     }
@@ -56,8 +59,10 @@ export async function exportM3U8Playlists() {
   }
 
   // Trigger downloads for each playlist
-  playlists.forEach(playlist => {
-    const blob = new Blob([playlist.content], { type: 'application/x-mpegURL' });
+  playlists.forEach((playlist) => {
+    const blob = new Blob([playlist.content], {
+      type: 'application/x-mpegURL',
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -81,18 +86,30 @@ export async function exportMoveLog(format: 'csv' | 'json') {
   let mimeType: string;
 
   if (format === 'csv') {
-    const headers = ['id', 'name', 'source', 'path', 'dropboxPathLower', 'genre', 'mood', 'status', 'targetPath'].join(',');
-    const rows = movedTracks.map(track => [
-      track.id,
-      `"${track.name.replace(/"/g, '""')}"`,
-      track.source,
-      `"${track.path?.replace(/"/g, '""') || ''}"`,
-      `"${track.dropboxPathLower?.replace(/"/g, '""') || ''}"`,
-      track.genre || '',
-      track.mood || '',
-      track.status,
-      `"${track.targetPath?.replace(/"/g, '""') || ''}"`,
-    ].join(','));
+    const headers = [
+      'id',
+      'name',
+      'source',
+      'path',
+      'dropboxPathLower',
+      'genre',
+      'mood',
+      'status',
+      'targetPath',
+    ].join(',');
+    const rows = movedTracks.map((track) =>
+      [
+        track.id,
+        `"${track.name.replace(/"/g, '""')}"`,
+        track.source,
+        `"${track.path?.replace(/"/g, '""') || ''}"`,
+        `"${track.dropboxPathLower?.replace(/"/g, '""') || ''}"`,
+        track.genre || '',
+        track.mood || '',
+        track.status,
+        `"${track.targetPath?.replace(/"/g, '""') || ''}"`,
+      ].join(',')
+    );
     content = [headers, ...rows].join('\n');
     filename = 'move_log.csv';
     mimeType = 'text/csv';

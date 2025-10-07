@@ -12,11 +12,11 @@ The DJ Organizer Web App aims to provide a robust, browser-based solution for DJ
 
 If you find a bug, please open an issue on our [GitHub repository](https://github.com/Theimbold/dj-organizer-web/issues). When reporting a bug, please include:
 
-*   A clear and concise description of the bug.
-*   Steps to reproduce the behavior.
-*   Expected behavior.
-*   Screenshots or videos if applicable.
-*   Your operating system and browser version.
+- A clear and concise description of the bug.
+- Steps to reproduce the behavior.
+- Expected behavior.
+- Screenshots or videos if applicable.
+- Your operating system and browser version.
 
 ### Suggesting Enhancements
 
@@ -46,11 +46,11 @@ We love new ideas! If you have a suggestion for an enhancement or a new feature,
     ```
 3.  **Dropbox API Key (Optional)**:
     To enable Dropbox integration in your local development environment:
-    *   Go to the [Dropbox Developers App Console](https://www.dropbox.com/developers/apps).
-    *   Create a new app (choose "Scoped access" and "App folder" or "Full Dropbox" depending on your testing needs).
-    *   Add `http://localhost:5173/` (or your Vite dev server URL) as a Redirect URI.
-    *   Copy your App key (Client ID).
-    *   Replace the placeholder `YOUR_DROPBOX_APP_CLIENT_ID` in `src/core/dropbox/dropbox.ts` with your actual Client ID.
+    - Go to the [Dropbox Developers App Console](https://www.dropbox.com/developers/apps).
+    - Create a new app (choose "Scoped access" and "App folder" or "Full Dropbox" depending on your testing needs).
+    - Add `http://localhost:5173/` (or your Vite dev server URL) as a Redirect URI.
+    - Copy your App key (Client ID).
+    - Replace the placeholder `YOUR_DROPBOX_APP_CLIENT_ID` in `src/core/dropbox/dropbox.ts` with your actual Client ID.
 
 4.  **Run the development server**:
     ```sh
@@ -62,31 +62,31 @@ We love new ideas! If you have a suggestion for an enhancement or a new feature,
 
 We have both unit and end-to-end (E2E) tests.
 
-*   **Unit Tests (Vitest & React Testing Library)**:
-    ```sh
-    npm test
-    # Or with UI
-    npm run test:ui
-    ```
-*   **End-to-End Tests (Playwright)**:
-    ```sh
-    npm run test:e2e
-    # Or with UI
-    npm run test:e2e:ui
-    ```
+- **Unit Tests (Vitest & React Testing Library)**:
+  ```sh
+  npm test
+  # Or with UI
+  npm run test:ui
+  ```
+- **End-to-End Tests (Playwright)**:
+  ```sh
+  npm run test:e2e
+  # Or with UI
+  npm run test:e2e:ui
+  ```
 
 ## Code Style
 
 We use ESLint and Prettier to enforce a consistent code style. Please make sure to run the linter and formatter before submitting a pull request.
 
-*   **Lint your code**:
-    ```sh
-    npm run lint
-    ```
-*   **Format your code**:
-    ```sh
-    npm run format
-    ```
+- **Lint your code**:
+  ```sh
+  npm run lint
+  ```
+- **Format your code**:
+  ```sh
+  npm run format
+  ```
 
 ## Commit Message Guidelines
 
@@ -102,17 +102,17 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0
 
 **Type**: Must be one of the following:
 
-*   `feat`: A new feature
-*   `fix`: A bug fix
-*   `docs`: Documentation only changes
-*   `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
-*   `refactor`: A code change that neither fixes a bug nor adds a feature
-*   `perf`: A code change that improves performance
-*   `test`: Adding missing tests or correcting existing tests
-*   `build`: Changes that affect the build system or external dependencies (example scopes: vite, npm)
-*   `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Actions)
-*   `chore`: Other changes that don't modify src or test files
-*   `revert`: Reverts a previous commit
+- `feat`: A new feature
+- `fix`: A bug fix
+- `docs`: Documentation only changes
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `perf`: A code change that improves performance
+- `test`: Adding missing tests or correcting existing tests
+- `build`: Changes that affect the build system or external dependencies (example scopes: vite, npm)
+- `ci`: Changes to our CI configuration files and scripts (example scopes: GitHub Actions)
+- `chore`: Other changes that don't modify src or test files
+- `revert`: Reverts a previous commit
 
 **Scope (optional)**: The scope should indicate the part of the codebase affected (e.g., `swipe`, `audio`, `db`, `fs`, `dropbox`, `i18n`, `docs`, `tests`).
 

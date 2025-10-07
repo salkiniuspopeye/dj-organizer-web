@@ -2,7 +2,11 @@
 /// <reference types="vitest/globals" />
 import { describe, it, expect, beforeEach } from 'vitest';
 import * as Vitest from 'vitest';
-import { generateMovePlan, executeMovePlan, type MovePlanItem } from './moveEngine';
+import {
+  generateMovePlan,
+  executeMovePlan,
+  type MovePlanItem,
+} from './moveEngine';
 import { db, type Track } from '../db/db';
 import * as fileSystem from './fileSystem';
 import * as dropbox from '../dropbox/dropbox';
@@ -48,7 +52,9 @@ describe('Move Engine', () => {
     (db.tracks.update as Vitest.vi.Mock).mockResolvedValue(1);
     (fileSystem.getDirectoryHandle as Vitest.vi.Mock).mockResolvedValue({});
     (fileSystem.getFileHandleFromPath as Vitest.vi.Mock).mockResolvedValue({
-      getFile: Vitest.vi.fn().mockResolvedValue({ size: 100, lastModified: Date.now() }),
+      getFile: Vitest.vi
+        .fn()
+        .mockResolvedValue({ size: 100, lastModified: Date.now() }),
       name: 'mockFile.mp3',
     });
     (dropbox.getDropboxClient as Vitest.vi.Mock).mockResolvedValue({});
@@ -75,7 +81,9 @@ describe('Move Engine', () => {
 
       expect(plan).toHaveLength(1);
       expect(plan[0].track).toEqual(mockTracks[0]);
-      expect(plan[0].targetPath).toBe('Finished Tracks/Techno/BANGER/Track 1.mp3');
+      expect(plan[0].targetPath).toBe(
+        'Finished Tracks/Techno/BANGER/Track 1.mp3'
+      );
       expect(plan[0].conflict).toBeUndefined();
     });
 
@@ -182,13 +190,25 @@ describe('Move Engine', () => {
         getDirectoryHandle: mockGetDirectoryHandle,
         removeEntry: mockRemoveEntry, // For root directory deletion if needed
       };
-      (fileSystem.getDirectoryHandle as vi.Mock).mockResolvedValue(mockRootHandle);
+      (fileSystem.getDirectoryHandle as vi.Mock).mockResolvedValue(
+        mockRootHandle
+      );
 
       await executeMovePlan([mockPlanItem]);
 
-      expect(fileSystem.getFileHandleFromPath).toHaveBeenCalledWith(mockRootHandle, mockTrack.path);
-      expect(fileSystem.moveFile).toHaveBeenCalledWith(mockRootHandle, expect.any(Object), mockPlanItem.targetPath);
-      expect(db.tracks.update).toHaveBeenCalledWith(mockTrack.id, { status: 'moved', targetPath: mockPlanItem.targetPath });
+      expect(fileSystem.getFileHandleFromPath).toHaveBeenCalledWith(
+        mockRootHandle,
+        mockTrack.path
+      );
+      expect(fileSystem.moveFile).toHaveBeenCalledWith(
+        mockRootHandle,
+        expect.any(Object),
+        mockPlanItem.targetPath
+      );
+      expect(db.tracks.update).toHaveBeenCalledWith(mockTrack.id, {
+        status: 'moved',
+        targetPath: mockPlanItem.targetPath,
+      });
       expect(mockRootHandle.getDirectoryHandle).toHaveBeenCalled(); // For parent directory
       const sourceFileName = mockTrack.name;
       expect(mockRemoveEntry).toHaveBeenCalledWith(sourceFileName);
@@ -213,12 +233,21 @@ describe('Move Engine', () => {
       };
 
       const mockDropboxClient = {};
-      (dropbox.getDropboxClient as vi.Mock).mockResolvedValue(mockDropboxClient);
+      (dropbox.getDropboxClient as vi.Mock).mockResolvedValue(
+        mockDropboxClient
+      );
 
       await executeMovePlan([mockPlanItem]);
 
-      expect(dropbox.moveFile).toHaveBeenCalledWith(mockDropboxClient, mockPlanItem.sourcePath, mockPlanItem.targetPath);
-      expect(db.tracks.update).toHaveBeenCalledWith(mockTrack.id, { status: 'moved', targetPath: mockPlanItem.targetPath });
+      expect(dropbox.moveFile).toHaveBeenCalledWith(
+        mockDropboxClient,
+        mockPlanItem.sourcePath,
+        mockPlanItem.targetPath
+      );
+      expect(db.tracks.update).toHaveBeenCalledWith(mockTrack.id, {
+        status: 'moved',
+        targetPath: mockPlanItem.targetPath,
+      });
     });
 
     it('should update track status to error on move failure', async () => {
@@ -240,11 +269,16 @@ describe('Move Engine', () => {
       };
 
       (fileSystem.getDirectoryHandle as vi.Mock).mockResolvedValue({});
-      (fileSystem.getFileHandleFromPath as vi.Mock).mockRejectedValue(new Error('File not found'));
+      (fileSystem.getFileHandleFromPath as vi.Mock).mockRejectedValue(
+        new Error('File not found')
+      );
 
       await executeMovePlan([mockPlanItem]);
 
-      expect(db.tracks.update).toHaveBeenCalledWith(mockTrack.id, { status: 'error', targetPath: mockPlanItem.targetPath });
+      expect(db.tracks.update).toHaveBeenCalledWith(mockTrack.id, {
+        status: 'error',
+        targetPath: mockPlanItem.targetPath,
+      });
     });
   });
 });

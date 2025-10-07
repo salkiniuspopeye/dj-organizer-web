@@ -1,4 +1,3 @@
-
 import { db } from '../db/db';
 
 const LIBRARY_SOURCE_ID = 1; // Assuming a single local library source for now
@@ -7,7 +6,9 @@ const LIBRARY_SOURCE_ID = 1; // Assuming a single local library source for now
  * Stores a directory handle in IndexedDB for persistent access.
  * @param handle The FileSystemDirectoryHandle to store.
  */
-async function storeDirectoryHandle(handle: FileSystemDirectoryHandle): Promise<void> {
+async function storeDirectoryHandle(
+  handle: FileSystemDirectoryHandle
+): Promise<void> {
   await db.librarySources.put({
     id: LIBRARY_SOURCE_ID,
     type: 'local',
@@ -116,24 +117,28 @@ export async function moveFile(
   sourceFileHandle: FileSystemFileHandle,
   targetPath: string
 ): Promise<void> {
-    const pathParts = targetPath.split('/');
-    const fileName = pathParts.pop();
-    if (!fileName) {
-        throw new Error('Invalid target path');
-    }
+  const pathParts = targetPath.split('/');
+  const fileName = pathParts.pop();
+  if (!fileName) {
+    throw new Error('Invalid target path');
+  }
 
-    let currentDirHandle = rootHandle;
-    for (const part of pathParts) {
-        currentDirHandle = await currentDirHandle.getDirectoryHandle(part, { create: true });
-    }
+  let currentDirHandle = rootHandle;
+  for (const part of pathParts) {
+    currentDirHandle = await currentDirHandle.getDirectoryHandle(part, {
+      create: true,
+    });
+  }
 
-    const newFileHandle = await currentDirHandle.getFileHandle(fileName, { create: true });
-    const writable = await newFileHandle.createWritable();
-    const file = await sourceFileHandle.getFile();
-    await writable.write(file);
-    await writable.close();
+  const newFileHandle = await currentDirHandle.getFileHandle(fileName, {
+    create: true,
+  });
+  const writable = await newFileHandle.createWritable();
+  const file = await sourceFileHandle.getFile();
+  await writable.write(file);
+  await writable.close();
 
-    // This is not a real move, it's a copy. The "Move Engine" will need to delete the original.
-    // For a true move, we would use sourceHandle.move(), but that has limitations across directories.
-    // A robust solution would involve deleting the source file after successful copy.
+  // This is not a real move, it's a copy. The "Move Engine" will need to delete the original.
+  // For a true move, we would use sourceHandle.move(), but that has limitations across directories.
+  // A robust solution would involve deleting the source file after successful copy.
 }

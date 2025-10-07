@@ -1,4 +1,3 @@
-
 import { Dropbox, type files } from 'dropbox';
 import { db } from '../db/db';
 
@@ -12,7 +11,15 @@ const DROPBOX_SOURCE_ID = 2; // Assuming a single dropbox source
  */
 export function authenticateWithDropbox() {
   const dbx = new Dropbox({ clientId: DROPBOX_CLIENT_ID });
-  const authUrl = (dbx as any).auth.getAuthenticationUrl(REDIRECT_URI, undefined, 'code', 'offline', undefined, undefined, true);
+  const authUrl = (dbx as any).auth.getAuthenticationUrl(
+    REDIRECT_URI,
+    undefined,
+    'code',
+    'offline',
+    undefined,
+    undefined,
+    true
+  );
   window.location.href = authUrl as string;
 }
 
@@ -23,7 +30,10 @@ export async function handleDropboxRedirect() {
   const code = new URLSearchParams(window.location.search).get('code');
   if (code) {
     const dbx = new Dropbox({ clientId: DROPBOX_CLIENT_ID });
-    const response = await (dbx as any).auth.getAccessTokenFromCode(REDIRECT_URI, code);
+    const response = await (dbx as any).auth.getAccessTokenFromCode(
+      REDIRECT_URI,
+      code
+    );
     const accessToken = (response.result as any).access_token;
     const refreshToken = (response.result as any).refresh_token;
 
@@ -52,7 +62,10 @@ export async function getDropboxClient(): Promise<Dropbox | null> {
     return null;
   }
 
-  const dbx = new Dropbox({ clientId: DROPBOX_CLIENT_ID, refreshToken: source.accessToken });
+  const dbx = new Dropbox({
+    clientId: DROPBOX_CLIENT_ID,
+    refreshToken: source.accessToken,
+  });
 
   try {
     await dbx.checkUser({ query: 'test' }); // This will refresh the token if it's expired
@@ -71,9 +84,16 @@ export async function getDropboxClient(): Promise<Dropbox | null> {
  * @param path The path to list files from.
  * @returns An array of file metadata.
  */
-export async function listFiles(dbx: Dropbox, path: string): Promise<files.ListFolderResult['entries']> {
+export async function listFiles(
+  dbx: Dropbox,
+  path: string
+): Promise<files.ListFolderResult['entries']> {
   try {
-    const response = await dbx.filesListFolder({ path, recursive: true, include_media_info: true });
+    const response = await dbx.filesListFolder({
+      path,
+      recursive: true,
+      include_media_info: true,
+    });
     let entries = response.result.entries;
 
     let hasMore = response.result.has_more;
@@ -86,7 +106,7 @@ export async function listFiles(dbx: Dropbox, path: string): Promise<files.ListF
       cursor = moreResponse.result.cursor;
     }
 
-    return entries.filter(entry => entry['.tag'] === 'file');
+    return entries.filter((entry) => entry['.tag'] === 'file');
   } catch (error) {
     console.error(`Error listing files in Dropbox path "${path}":`, error);
     return [];
@@ -99,7 +119,14 @@ export async function listFiles(dbx: Dropbox, path: string): Promise<files.ListF
  * @param fromPath The source path of the file.
  * @param toPath The destination path of the file.
  */
-export async function moveFile(dbx: Dropbox, fromPath: string, toPath: string): Promise<files.FileMetadata> {
-  const response = await dbx.filesMoveV2({ from_path: fromPath, to_path: toPath });
+export async function moveFile(
+  dbx: Dropbox,
+  fromPath: string,
+  toPath: string
+): Promise<files.FileMetadata> {
+  const response = await dbx.filesMoveV2({
+    from_path: fromPath,
+    to_path: toPath,
+  });
   return response.result.metadata as files.FileMetadata;
 }

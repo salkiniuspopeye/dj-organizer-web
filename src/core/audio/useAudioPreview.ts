@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 let audioContext: AudioContext;
 function getAudioContext() {
   if (!audioContext) {
-    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContext = new (window.AudioContext ||
+      (window as any).webkitAudioContext)();
   }
   return audioContext;
 }
@@ -56,10 +57,11 @@ export function useAudioPreview({
         const context = getAudioContext();
         const url = src instanceof File ? URL.createObjectURL(src) : src;
         const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
         const decodedBuffer = await context.decodeAudioData(arrayBuffer);
-        
+
         audioBufferRef.current = decodedBuffer;
         setDuration(decodedBuffer.duration);
       } catch (e) {
@@ -88,8 +90,9 @@ export function useAudioPreview({
 
     let startOffset = duration * startOffsetPercent;
     // Fallback for short files
-    if (duration < 60) { // Example threshold for a "short file"
-        startOffset = Math.min(10, duration * 0.1);
+    if (duration < 60) {
+      // Example threshold for a "short file"
+      startOffset = Math.min(10, duration * 0.1);
     }
 
     source.loop = true;
@@ -98,21 +101,20 @@ export function useAudioPreview({
 
     startTimeRef.current = 0; // We always start fresh
     startedAtRef.current = context.currentTime;
-    
+
     source.start(0, startOffset);
     setIsPlaying(true);
 
     source.onended = () => {
-        if (sourceRef.current === source) {
-            setIsPlaying(false);
-        }
+      if (sourceRef.current === source) {
+        setIsPlaying(false);
+      }
     };
-
   }, [isPlaying, duration, startOffsetPercent, loopDuration, cleanupSource]);
 
   const pause = useCallback(() => {
     if (!isPlaying || !sourceRef.current) return;
-    
+
     const context = getAudioContext();
     // Calculate how much time has passed
     const elapsedTime = context.currentTime - startedAtRef.current;

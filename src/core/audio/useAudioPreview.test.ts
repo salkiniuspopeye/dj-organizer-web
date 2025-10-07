@@ -22,15 +22,24 @@ const mockAudioContext = {
   close: vi.fn(),
 };
 
-vi.stubGlobal('AudioContext', vi.fn(() => mockAudioContext));
-vi.stubGlobal('webkitAudioContext', vi.fn(() => mockAudioContext));
+vi.stubGlobal(
+  'AudioContext',
+  vi.fn(() => mockAudioContext)
+);
+vi.stubGlobal(
+  'webkitAudioContext',
+  vi.fn(() => mockAudioContext)
+);
 
-vi.stubGlobal('fetch', vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
-  })
-));
+vi.stubGlobal(
+  'fetch',
+  vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+    })
+  )
+);
 
 // Now import the hook after mocks are set up
 import { useAudioPreview } from './useAudioPreview';
@@ -63,7 +72,13 @@ describe('useAudioPreview', () => {
   });
 
   it('should calculate the correct start offset for a standard track (35%)', async () => {
-    const { result } = renderHook(() => useAudioPreview({ src: 'test.mp3', startOffsetPercent: 0.35, loopDuration: 20 }));
+    const { result } = renderHook(() =>
+      useAudioPreview({
+        src: 'test.mp3',
+        startOffsetPercent: 0.35,
+        loopDuration: 20,
+      })
+    );
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     act(() => {
