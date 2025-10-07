@@ -26,7 +26,7 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Core: .aiff-Unterstützung im Indexer — Erweitert den Indexer, um .aiff-Dateien korrekt zu verarbeiten.
 - [x] Core: Audio-Dauer ermitteln (Web Audio API) — Nutzt die Web Audio API, um die Dauer von Audio-Dateien zu bestimmen.
 - [x] Core: Fallback für unbekannte Audio-Dauer — Implementiert einen Fallback, wenn die Audio-Dauer nicht ermittelt werden kann (z.B. 10s oder 0.1*len).
-- [ ] DB: IndexedDB-Schema für Tracks erweitern — Fügt Felder wie 'duration' und 'sourcePath' zum Track-Schema hinzu.
+- [x] DB: IndexedDB-Schema für Tracks erweitern — Fügt Felder wie 'duration' und 'sourcePath' zum Track-Schema hinzu.
 - [ ] DB: Tracks in IndexedDB speichern — Speichert die indexierten Audio-Dateien in der IndexedDB.
 - [ ] Core: useAudioPreview Hook erstellen — Implementiert einen React Hook für die Audio-Vorschau.
 - [ ] Core: Preview-Start bei 35% der Dauer — Stellt sicher, dass die Audio-Vorschau bei 35% der Track-Dauer beginnt.
