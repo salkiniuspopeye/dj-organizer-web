@@ -73,9 +73,9 @@ export class MySubClassedDexie extends Dexie {
     });
 
     // Basic migration for future schema changes
-    this.version(2).upgrade(tx => {
+    this.version(2).upgrade(_tx => { // Prefix with underscore to mark as intentionally unused
       // No schema changes in version 2 yet, but this sets up the migration path.
-      // Example: tx.table('tracks').toCollection().modify(track => track.newField = 'defaultValue');
+      // Example: _tx.table('tracks').toCollection().modify(track => track.newField = 'defaultValue');
     });
   }
 }
