@@ -47,6 +47,11 @@ Diese Aufgaben konzentrieren sich auf Detailverbesserungen, Dokumentation und zu
 - [x] Bug: Fix TS2552 'worker' not found in TrackCard.tsx — Korrigiert den Fehler, dass 'worker' in TrackCard.tsx nicht gefunden wird.
 
 - [ ] Bug: Fix Vitest module resolution for test files (BLOCKED: Requires manual configuration change in vite.config.ts) — Korrigiert die Modulauflösung in Vitest für Testdateien.
+- [ ] Hotfix: Directory-Picker-Guard (catch + UI-Hinweis) — Implementiert robustes Fehlerhandling für showDirectoryPicker und walkDirectory bei Systemdateien und zeigt einen UI-Hinweis an.
+- [ ] P0: Fallback „Dateien wählen“ (input multiple webkitdirectory) — Bietet einen Fallback-Mechanismus zur Ordnerauswahl mittels <input type="file" webkitdirectory multiple>, falls showDirectoryPicker fehlschlägt oder nicht verfügbar ist.
+- [ ] P0: Rekursiv-Scan mit Concurrency-Limit + Skip-Liste — Verbessert den rekursiven Scan mit einem Concurrency-Limit und einer Skip-Liste für Systemdateien/Ordner (desktop.ini, Thumbs.db, $RECYCLE.BIN, System Volume Information, .~, ._).
+- [ ] P0: Fehlerklassen/„kaputte Datei“ UX — Verfeinert das Fehlerhandling und die UX für "kaputte Dateien" durch spezifische Fehlerklassen für granularere Anzeige der Fehlerursachen.
+- [ ] P0: 2 Mini-Tests (Filter & Sort) — Fügt zwei fokussierte Unit-Tests hinzu: einen für die Audio-Dateifilterung in fileSystem.ts und einen für die Case-Insensitive-Sortierung.
 
 ## P1 Tasks
 
