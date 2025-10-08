@@ -4,7 +4,7 @@ export interface AudioProcessor {
   getAudioDuration(audioFile: File | string): Promise<number>;
 }
 
-const audioContext = new OfflineAudioContext(1, 1, 44100); // Sample rate doesn't matter for duration
+const audioContext = new (self.OfflineAudioContext || (self as any).webkitOfflineAudioContext)(1, 1, 44100); // Sample rate doesn't matter for duration
 
 const audioProcessor: AudioProcessor = {
   async getAudioDuration(audioFile: File | string): Promise<number> {

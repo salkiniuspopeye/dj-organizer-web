@@ -33,6 +33,8 @@ i18n
           status_assigned: 'Assigned',
           status_moved: 'Moved',
           status_error: 'Error',
+          empty_state_message: 'No tracks loaded. Please select a folder.',
+          select_folder_button: 'Select Folder',
         },
       },
       de: {
@@ -56,6 +58,8 @@ i18n
           status_assigned: 'Zugewiesen',
           status_moved: 'Verschoben',
           status_error: 'Fehler',
+          empty_state_message: 'Keine Tracks geladen. Bitte wählen Sie einen Ordner aus.',
+          select_folder_button: 'Ordner wählen',
         },
       },
     },

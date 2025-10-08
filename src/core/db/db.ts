@@ -65,17 +65,21 @@ export class MySubClassedDexie extends Dexie {
 
   constructor() {
     super('djOrganizer');
-    this.version(1).stores({
-      tracks: 'id, name, genre, mood, status, source',
+    this.version(2).stores({
+      tracks: 'id, name, lowerCaseName, genre, mood, status, source',
       librarySources: '++id, type, name',
       genres: '++id, &name',
       movePlans: 'id, status', // Add status to indexed fields
     });
 
     // Basic migration for future schema changes
-    this.version(2).upgrade(_tx => { // Prefix with underscore to mark as intentionally unused
-      // No schema changes in version 2 yet, but this sets up the migration path.
-      // Example: _tx.table('tracks').toCollection().modify(track => track.newField = 'defaultValue');
+    this.version(2).upgrade(async (trans) => {
+      // Populate lowerCaseName for existing tracks
+      await trans.table('tracks').toCollection().modify(track => {
+        if (track.name && !track.lowerCaseName) {
+          track.lowerCaseName = track.name.toLowerCase();
+        }
+      });
     });
   }
 }
