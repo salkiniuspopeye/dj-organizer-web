@@ -111,15 +111,7 @@ export function useAudioPreview({
     source.connect(context.destination);
     sourceRef.current = source;
 
-    let startOffset = duration * startOffsetPercent;
-
-    // Fallback for unknown duration or short files
-    if (duration === 0) {
-      startOffset = 10; // Default to 10 seconds if duration is unknown
-    } else if (duration < 60) {
-      // Example threshold for a "short file"
-      startOffset = Math.min(10, duration * 0.1);
-    }
+    const startOffset = 0;
 
     source.loop = true;
     source.loopStart = startOffset;

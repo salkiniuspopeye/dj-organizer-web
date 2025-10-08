@@ -11,6 +11,7 @@ export const SwipeFeed: React.FC = () => {
   const parentRef = useRef<HTMLDivElement>(null);
   const [offset, setOffset] = useState(0);
   const [allGenres, setAllGenres] = useState<Genre[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
   const { t } = useTranslation();
 
   // Fetch all genres from the database
@@ -24,7 +25,7 @@ export const SwipeFeed: React.FC = () => {
 
   // Fetch tracks from the database with pagination
   const tracks = useLiveQuery(
-    () => db.tracks.offset(offset).limit(PAGE_SIZE).toArray(),
+    () => db.tracks.orderBy('lowerCaseName').offset(offset).limit(PAGE_SIZE).toArray(),
     [offset]
   );
 
@@ -36,6 +37,32 @@ export const SwipeFeed: React.FC = () => {
   });
 
   const virtualItems = rowVirtualizer.getVirtualItems();
+
+  const handleNavigation = useCallback((direction: 'next' | 'prev') => {
+    const newIndex = direction === 'next' ? activeIndex + 1 : activeIndex - 1;
+    if (newIndex >= 0 && tracks && newIndex < tracks.length) {
+      setActiveIndex(newIndex);
+      rowVirtualizer.scrollToIndex(newIndex, { align: 'start' });
+    }
+  }, [activeIndex, tracks, rowVirtualizer]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleNavigation('next');
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        handleNavigation('prev');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleNavigation]);
 
   // Load more items when scrolling near the end
   useEffect(() => {
@@ -78,42 +105,61 @@ export const SwipeFeed: React.FC = () => {
   }
 
   return (
-    <div
-      ref={parentRef}
-      className="list-container w-full h-[calc(100vh-100px)] overflow-auto snap-y snap-mandatory"
-    >
+    <div>
+      <div className="flex justify-center my-2 gap-4">
+        <button
+          onClick={() => handleNavigation('prev')}
+          disabled={activeIndex === 0}
+          className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        >
+          {t('previous')}
+        </button>
+        <button
+          onClick={() => handleNavigation('next')}
+          disabled={!tracks || activeIndex === tracks.length - 1}
+          className="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+        >
+          {t('next')}
+        </button>
+      </div>
       <div
-        style={{
-          height: rowVirtualizer.getTotalSize(),
-          width: '100%',
-          position: 'relative',
-        }}
+        ref={parentRef}
+        className="list-container w-full h-[calc(100vh-150px)] overflow-auto snap-y snap-mandatory"
+        tabIndex={0} // Make it focusable
       >
-        {virtualItems.map((virtualRow) => {
-          const track = tracks[virtualRow.index];
-          return (
-            <div
-              key={virtualRow.key}
-              data-index={virtualRow.index}
-              ref={rowVirtualizer.measureElement}
-              className="snap-center"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-            >
-              <TrackCard
-                track={track}
-                onGenreChange={handleGenreChange}
-                onMoodChange={handleMoodChange}
-                allGenres={allGenres}
-              />
-            </div>
-          );
-        })}
+        <div
+          style={{
+            height: rowVirtualizer.getTotalSize(),
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {virtualItems.map((virtualRow) => {
+            const track = tracks[virtualRow.index];
+            return (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={rowVirtualizer.measureElement}
+                className="snap-center"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                <TrackCard
+                  track={track}
+                  onGenreChange={handleGenreChange}
+                  onMoodChange={handleMoodChange}
+                  allGenres={allGenres}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
