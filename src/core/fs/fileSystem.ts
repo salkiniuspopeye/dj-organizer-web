@@ -70,22 +70,25 @@ export const AUDIO_EXTENSIONS = [
 ];
 
 const CONCURRENCY_LIMIT = 16;
-const SKIP_PATTERNS = [
+const SKIP_FILE_NAMES = [
   'desktop.ini',
   'Thumbs.db',
-  '$RECYCLE.BIN',
-  'System Volume Information',
+];
+const SKIP_PREFIXES = [
   '.~', // Files starting with .~ (e.g., temporary files)
   '._', // Files starting with ._ (e.g., macOS resource forks)
+  '$RECYCLE.BIN', // Folder
+  'System Volume Information', // Folder
 ];
 
-function shouldSkip(name: string): boolean {
-  return SKIP_PATTERNS.some(pattern => {
-    if (pattern.endsWith('*')) {
-      return name.startsWith(pattern.slice(0, -1));
-    }
-    return name.toLowerCase() === pattern.toLowerCase();
-  });
+function shouldSkip(name: string, kind: 'file' | 'directory'): boolean {
+  if (kind === 'file' && SKIP_FILE_NAMES.some(p => name.toLowerCase() === p.toLowerCase())) {
+    return true;
+  }
+  if (SKIP_PREFIXES.some(p => name.startsWith(p))) {
+    return true;
+  }
+  return false;
 }
 
 export async function* walkDirectory(
@@ -104,7 +107,7 @@ export async function* walkDirectory(
       throw new DOMException('Aborted', 'AbortError');
     }
     for await (const entry of currentDirHandle.values()) {
-      if (shouldSkip(entry.name)) {
+      if (shouldSkip(entry.name, entry.kind)) {
         continue;
       }
       const newPath = `${currentPath}${currentPath ? '/' : ''}${entry.name}`;
@@ -115,7 +118,7 @@ export async function* walkDirectory(
           filesToProcess.push({ entry, currentPath });
         }
       } else if (entry.kind === 'directory') {
-        const subDirHandle = await (entry as FileSystemDirectoryHandle).getDirectoryHandle(entry.name);
+        const subDirHandle = await currentDirHandle.getDirectoryHandle(entry.name);
         await collectEntries(subDirHandle, newPath);
       }
     }
