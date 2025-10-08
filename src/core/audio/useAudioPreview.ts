@@ -2,6 +2,21 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { wrap } from 'comlink';
 import type { AudioProcessor } from './audioWorker';
 
+export enum AudioErrorType {
+  GENERIC_DECODE_ERROR = 'GENERIC_DECODE_ERROR',
+  UNSUPPORTED_FORMAT = 'UNSUPPORTED_FORMAT',
+  NETWORK_ERROR = 'NETWORK_ERROR',
+  ABORTED = 'ABORTED',
+  UNKNOWN = 'UNKNOWN',
+}
+
+export class AudioProcessingError extends Error {
+  constructor(public type: AudioErrorType, message: string, public originalError?: any) {
+    super(message);
+    this.name = 'AudioProcessingError';
+  }
+}
+
 // Create a single, shared AudioContext.
 const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
 
@@ -41,7 +56,7 @@ export function useAudioPreview({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(!!src);
   const [duration, setDuration] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<AudioProcessingError | null>(null);
 
   const audioBufferRef = useRef<AudioBuffer | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -82,8 +97,28 @@ export function useAudioPreview({
 
         audioBufferRef.current = decodedBuffer;
         setDuration(decodedDuration);
-      } catch (e) {
-        setError('Failed to load or decode audio.');
+      } catch (e: any) {
+        let errorType: AudioErrorType = AudioErrorType.UNKNOWN;
+        let errorMessage = 'Failed to load or decode audio.';
+
+        if (e instanceof DOMException && e.name === 'AbortError') {
+          errorType = AudioErrorType.ABORTED;
+          errorMessage = 'Audio loading aborted.';
+        } else if (e instanceof DOMException && e.name === 'EncodingError') {
+          errorType = AudioErrorType.UNSUPPORTED_FORMAT;
+          errorMessage = 'Unsupported audio format or corrupt file.';
+        } else if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
+          errorType = AudioErrorType.NETWORK_ERROR;
+          errorMessage = 'Network error during audio loading.';
+        } else if (e instanceof AudioProcessingError) {
+          // Already a custom error
+          errorType = e.type;
+          errorMessage = e.message;
+        } else if (e instanceof Error) {
+          errorMessage = e.message;
+        }
+
+        setError(new AudioProcessingError(errorType, errorMessage, e));
         console.error(e);
         audioBufferRef.current = null;
       }

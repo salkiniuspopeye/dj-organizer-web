@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { type Track, moods, type Genre } from '../../core/db/db';
-import { useAudioPreview } from '../../core/audio/useAudioPreview';
+import { useAudioPreview, AudioProcessingError, AudioErrorType } from '../../core/audio/useAudioPreview';
 import { useTranslation } from 'react-i18next';
 import { wrap } from 'comlink';
 import type { ThumbnailProcessor } from '../../core/audio/thumbnailWorker';
@@ -39,6 +39,24 @@ export const TrackCard: React.FC<TrackCardProps> = ({
       setThumbnailUrl(null);
     }
   }, [track.artwork]);
+
+  const getErrorMessage = () => {
+    if (!error) return null;
+
+    switch (error.type) {
+      case AudioErrorType.ABORTED:
+        return t('audio_error_aborted');
+      case AudioErrorType.NETWORK_ERROR:
+        return t('audio_error_network');
+      case AudioErrorType.UNSUPPORTED_FORMAT:
+        return t('audio_error_unsupported_format');
+      case AudioErrorType.GENERIC_DECODE_ERROR:
+        return t('audio_error_generic_decode');
+      case AudioErrorType.UNKNOWN:
+      default:
+        return t('audio_error_unknown');
+    }
+  };
 
   return (
     <div className="relative w-full max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
@@ -83,7 +101,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({
         >
           {isLoading ? t("loading") : isPlaying ? t("pause") : t("play_preview")}
         </button>
-        {error && <p className="text-red-500 text-sm mt-2" role="alert" aria-live="assertive">{t("error")}: {error}</p>}
+        {error && <p className="text-red-500 text-sm mt-2" role="alert" aria-live="assertive">{getErrorMessage()}</p>}
       </div>
 
       {/* Genre Select */}
