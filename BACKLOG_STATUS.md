@@ -21,3 +21,4 @@
 |---|---|---|---|---|
 | Funktionaler Review | Ordnerwahl (Directory-Picker-Guard & Fallback) | OK | `src/App.tsx`, `src/core/fs/directoryHandler.ts`, `src/core/i18n/i18n.ts` | Directory-Picker-Guard und Fallback funktionieren wie erwartet. |
 | Funktionaler Review | Rekursiver Scan | OK | `src/core/fs/fileSystem.ts`, `src/App.tsx` | Rekursion, Concurrency-Limit, Skip-Liste, AbortController und Progress-Callback sind implementiert. |
+| Funktionaler Review | Filter (.aiff/.aif/.mp3/.wav) | Nicht OK (Teilweise) | `src/core/fs/fileSystem.ts` (`AUDIO_EXTENSIONS`) | `AUDIO_EXTENSIONS` enthält `.ogg` und `.flac`, die nicht Teil der Spezifikation sind. |
