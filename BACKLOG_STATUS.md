@@ -24,3 +24,4 @@
 | Funktionaler Review | Filter (.aiff/.aif/.mp3/.wav) | Nicht OK (Teilweise) | `src/core/fs/fileSystem.ts` (`AUDIO_EXTENSIONS`) | `AUDIO_EXTENSIONS` enthält `.ogg` und `.flac`, die nicht Teil der Spezifikation sind. |
 | Funktionaler Review | Alphabetische Sortierung (A→Z) | OK | `src/core/db/db.ts`, `src/App.tsx`, `src/features/swipe/SwipeFeed.tsx`, `tests/unit/sorting.test.ts` | Case-insensitive Sortierung ist korrekt implementiert und getestet. |
 | Funktionaler Review | Erste Datei anzeigen (Titel, Dauer, Cover*) | OK | `src/features/swipe/SwipeFeed.tsx`, `src/features/swipe/TrackCard.tsx`, `src/core/db/db.ts` | Anzeige von Titel, Dauer und Cover/Placeholder funktioniert wie erwartet. |
+| Funktionaler Review | Play/Pause ab 0:00 | OK | `src/core/audio/useAudioPreview.ts`, `src/features/swipe/TrackCard.tsx` | Wiedergabe startet bei 0:00, Play/Pause-Funktionalität und Cleanup sind korrekt. |
