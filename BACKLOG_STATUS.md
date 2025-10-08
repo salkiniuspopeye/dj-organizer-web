@@ -12,5 +12,5 @@
 | P0 | Fallback „Dateien wählen“ (input multiple webkitdirectory) | Ja | `src/App.tsx` (`fileInputRef`, `handleIndexFiles`, hidden input, button `onClick`) | `webkitdirectory` ist nicht standardisiert und könnte in einigen Browsern nicht funktionieren. |
 | P0 | Rekursiv-Scan mit Concurrency-Limit + Skip-Liste | Ja | `src/core/fs/fileSystem.ts` (new `walkDirectory` with `CONCURRENCY_LIMIT`, `SKIP_PATTERNS`, `shouldSkip`, `progressCallback`, `abortSignal`), `src/App.tsx` (scan progress states, abort button) | `totalCount` wurde angepasst, um nur Audio-Dateien zu zählen. |
 | P0 | Fehlerklassen/„kaputte Datei“ UX | Ja | `src/core/audio/useAudioPreview.ts`, `src/features/swipe/TrackCard.tsx`, `src/core/i18n/i18n.ts` | |
-| P0 | 2 Mini-Tests (Filter & Sort) | Nein | | Erfordert das Schreiben neuer Testdateien oder das Hinzufügen zu bestehenden. |
+| P0 | 2 Mini-Tests (Filter & Sort) | Ja | `tests/unit/fileSystem.test.ts`, `tests/unit/sorting.test.ts` | |
 | P0 | Fix Vitest module resolution for test files (BLOCKED) | Ja | `tsconfig.app.json` | Modulauflösung behoben, aber Tests schlagen weiterhin fehl aufgrund anderer Probleme (Mocking, Browser-APIs). |

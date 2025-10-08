@@ -11,3 +11,9 @@
 *   **Decision:** Proceeded with `<input type="file" multiple webkitdirectory>` for the fallback file picker as per task description.
 *   **Reasoning:** Provides a user experience similar to the File System Access API for folder selection, which was explicitly requested.
 *   **Impact:** Relies on a non-standard HTML attribute (`webkitdirectory`) which might have limited browser support (primarily Chromium-based browsers). This is noted as a risk.
+
+## 3. Unit Testing Strategy for `walkDirectory` and Dexie Queries
+
+*   **Decision:** For `walkDirectory`, mocked `FileSystemDirectoryHandle` API to test filtering and skipping logic. For Dexie queries, directly called the query function (that `useLiveQuery` would execute) with a mocked `db` object to assert on method calls and returned data.
+*   **Reasoning:** This approach allows for focused unit testing of the core logic without involving complex React component rendering or full browser environment mocks, keeping tests lightweight and fast.
+*   **Impact:** Enables verification of critical file system and data access logic.

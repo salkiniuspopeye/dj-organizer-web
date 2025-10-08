@@ -1,6 +1,6 @@
 # Progress
 
-13/14 P0 Tasks (92%)
+14/14 P0 Tasks (100%)
 
 ## Checkup Rounds
 
@@ -31,5 +31,9 @@
 - Date: Mittwoch, 8. Oktober 2025
 
 ### Feat: Fehlerklassen/„kaputte Datei“ UX
+- Status: Completed
+- Date: Mittwoch, 8. Oktober 2025
+
+### Feat: 2 Mini-Tests (Filter & Sort)
 - Status: Completed
 - Date: Mittwoch, 8. Oktober 2025
