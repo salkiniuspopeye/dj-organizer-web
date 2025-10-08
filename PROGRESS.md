@@ -1,3 +1,3 @@
 # Progress
 
-6/7 P0 Tasks (86%)
+7/7 P0 Tasks (100%)
