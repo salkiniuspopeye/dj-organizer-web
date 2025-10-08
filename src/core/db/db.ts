@@ -4,6 +4,7 @@ import type { MovePlanItem } from '../fs/moveEngine';
 export interface Track {
   id: string;
   name: string;
+  lowerCaseName?: string; // For case-insensitive sorting
   size: number;
   mtime?: number; // Modification time in milliseconds
   duration?: number;
@@ -66,7 +67,7 @@ export class MySubClassedDexie extends Dexie {
   constructor() {
     super('djOrganizer');
     this.version(1).stores({
-      tracks: 'id, name, genre, mood, status, source',
+      tracks: 'id, name, lowerCaseName, genre, mood, status, source',
       librarySources: '++id, type, name',
       genres: '++id, &name',
       movePlans: 'id, status', // Add status to indexed fields

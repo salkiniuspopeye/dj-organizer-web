@@ -24,7 +24,7 @@ export const SwipeFeed: React.FC = () => {
 
   // Fetch tracks from the database with pagination
   const tracks = useLiveQuery(
-    () => db.tracks.offset(offset).limit(PAGE_SIZE).toArray(),
+    () => db.tracks.orderBy('lowerCaseName').offset(offset).limit(PAGE_SIZE).toArray(),
     [offset]
   );
 

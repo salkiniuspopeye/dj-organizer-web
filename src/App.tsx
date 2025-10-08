@@ -29,6 +29,7 @@ export default function App() {
       newTracks.push({
         id: file.name, // Use file name as ID for now, should be more robust later
         name: file.name,
+        lowerCaseName: file.name.toLowerCase(),
         size: file.size,
         mtime: file.lastModified,
         source: 'local',
@@ -90,6 +91,7 @@ export default function App() {
           {
             id: 'test-track-1',
             name: 'Test Track 1.mp3',
+            lowerCaseName: 'test track 1.mp3',
             size: 1024 * 1024 * 5, // 5MB
             mtime: Date.now(),
             source: 'local',
@@ -101,6 +103,7 @@ export default function App() {
           {
             id: 'test-track-2',
             name: 'Test Track 2.mp3',
+            lowerCaseName: 'test track 2.mp3',
             size: 1024 * 1024 * 7, // 7MB
             mtime: Date.now() + 1000,
             source: 'local',
