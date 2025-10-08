@@ -17,3 +17,7 @@
 ### Fix: Directory-Picker-Guard (catch + UI-Hinweis)
 - Status: Completed
 - Date: Mittwoch, 8. Oktober 2025
+
+### Feat: Fallback „Dateien wählen“ (input multiple webkitdirectory)
+- Status: Completed
+- Date: Mittwoch, 8. Oktober 2025
