@@ -21,10 +21,25 @@ export default function App() {
   const [showDirectoryError, setShowDirectoryError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [scanProgress, setScanProgress] = useState(0);
+  const [scanTotal, setScanTotal] = useState(0);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scanAbortController, setScanAbortController] = useState<AbortController | null>(null);
+
   const handleIndexFiles = useCallback(async (files: FileList) => {
+    setIsScanning(true);
+    setScanProgress(0);
+    setScanTotal(files.length);
+    const controller = new AbortController();
+    setScanAbortController(controller);
+
     console.log('Indexing files from fallback:', files);
     const newTracks: Track[] = [];
     for (let i = 0; i < files.length; i++) {
+      if (controller.signal.aborted) {
+        console.log('File indexing aborted.');
+        break;
+      }
       const file = files[i];
       const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`;
       if (AUDIO_EXTENSIONS.includes(fileExtension)) {
@@ -39,33 +54,61 @@ export default function App() {
           status: 'unassigned',
         });
       }
+      setScanProgress(i + 1);
     }
     await trackRepository.saveTracks(newTracks);
     console.log(`Indexed ${newTracks.length} tracks from fallback.`);
     setShowDirectoryError(false);
     setDirectoryHandle(null); // Indicate that no DirectoryHandle is active
+    setIsScanning(false);
+    setScanAbortController(null);
   }, []);
 
   const handleIndexFolder = useCallback(async () => {
     if (!directoryHandle) return;
 
+    setIsScanning(true);
+    setScanProgress(0);
+    setScanTotal(0); // Total will be updated by walkDirectory's callback
+    const controller = new AbortController();
+    setScanAbortController(controller);
+
     console.log('Indexing folder:', directoryHandle.name);
     const newTracks: Track[] = [];
-    for await (const [fileHandle, relativePath] of walkDirectory(directoryHandle)) {
-      const file = await fileHandle.getFile();
-      newTracks.push({
-        id: file.name, // Use file name as ID for now, should be more robust later
-        name: file.name,
-        lowerCaseName: file.name.toLowerCase(),
-        size: file.size,
-        mtime: file.lastModified,
-        source: 'local',
-        path: relativePath,
-        status: 'unassigned',
-      });
+    try {
+      for await (const [fileHandle, relativePath] of walkDirectory(
+        directoryHandle,
+        '',
+        (processed, total) => {
+          setScanProgress(processed);
+          setScanTotal(total);
+        },
+        controller.signal
+      )) {
+        const file = await fileHandle.getFile();
+        newTracks.push({
+          id: file.name, // Use file name as ID for now, should be more robust later
+          name: file.name,
+          lowerCaseName: file.name.toLowerCase(),
+          size: file.size,
+          mtime: file.lastModified,
+          source: 'local',
+          path: relativePath,
+          status: 'unassigned',
+        });
+      }
+      await trackRepository.saveTracks(newTracks);
+      console.log(`Indexed ${newTracks.length} tracks.`);
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log('Folder indexing aborted.');
+      } else {
+        console.error('Error during folder indexing:', error);
+      }
+    } finally {
+      setIsScanning(false);
+      setScanAbortController(null);
     }
-    await trackRepository.saveTracks(newTracks);
-    console.log(`Indexed ${newTracks.length} tracks.`);
   }, [directoryHandle]);
 
   // Check for pending move plans on startup
@@ -280,6 +323,17 @@ export default function App() {
             }}
             style={{ display: 'none' }}
           />
+          {isScanning ? (
+            <div className="mt-4 p-4 bg-blue-500 text-white rounded-lg">
+              <p className="mb-2">{t('scanning_progress', { processed: scanProgress, total: scanTotal || '...' })}</p>
+              <button
+                onClick={() => scanAbortController?.abort()}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                {t('abort_scan')}
+              </button>
+            </div>
+          ) : null}
           <button
             onClick={async () => {
               setShowDirectoryError(false); // Reset error state
@@ -306,6 +360,17 @@ export default function App() {
         </div>
       ) : (
         <>
+          {isScanning ? (
+            <div className="mt-4 p-4 bg-blue-500 text-white rounded-lg">
+              <p className="mb-2">{t('scanning_progress', { processed: scanProgress, total: scanTotal || '...' })}</p>
+              <button
+                onClick={() => scanAbortController?.abort()}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                {t('abort_scan')}
+              </button>
+            </div>
+          ) : null}
           <button
             onClick={async () => {
               setShowDirectoryError(false); // Reset error state

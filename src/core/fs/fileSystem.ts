@@ -69,25 +69,119 @@ export const AUDIO_EXTENSIONS = [
   '.mp3', '.wav', '.ogg', '.flac', '.aiff', '.aif',
 ];
 
+const CONCURRENCY_LIMIT = 16;
+const SKIP_PATTERNS = [
+  'desktop.ini',
+  'Thumbs.db',
+  '$RECYCLE.BIN',
+  'System Volume Information',
+  '.~', // Files starting with .~ (e.g., temporary files)
+  '._', // Files starting with ._ (e.g., macOS resource forks)
+];
+
+function shouldSkip(name: string): boolean {
+  return SKIP_PATTERNS.some(pattern => {
+    if (pattern.endsWith('*')) {
+      return name.startsWith(pattern.slice(0, -1));
+    }
+    return name.toLowerCase() === pattern.toLowerCase();
+  });
+}
+
 export async function* walkDirectory(
   dirHandle: FileSystemDirectoryHandle,
-  parentPath = ''
+  parentPath = '',
+  progressCallback?: (processed: number, total: number) => void,
+  abortSignal?: AbortSignal
 ): AsyncGenerator<[FileSystemFileHandle, string]> {
-  for await (const entry of dirHandle.values()) {
-    const relativePath = `${parentPath}${parentPath ? '/' : ''}${entry.name}`;
+  let processedCount = 0;
+  let totalCount = 0;
+  const filesToProcess: { entry: FileSystemHandle; currentPath: string }[] = [];
+
+  // First pass: collect all entries and estimate total count
+  const collectEntries = async (currentDirHandle: FileSystemDirectoryHandle, currentPath: string) => {
+    if (abortSignal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+    for await (const entry of currentDirHandle.values()) {
+      if (shouldSkip(entry.name)) {
+        continue;
+      }
+      const newPath = `${currentPath}${currentPath ? '/' : ''}${entry.name}`;
+      if (entry.kind === 'file') {
+        totalCount++;
+        filesToProcess.push({ entry, currentPath });
+      } else if (entry.kind === 'directory') {
+        const subDirHandle = await (entry as FileSystemDirectoryHandle).getDirectoryHandle(entry.name);
+        await collectEntries(subDirHandle, newPath);
+      }
+    }
+  };
+
+  await collectEntries(dirHandle, parentPath);
+
+  const processFile = async (item: { entry: FileSystemHandle; currentPath: string }): Promise<[FileSystemFileHandle, string] | null> => {
+    if (abortSignal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+
+    const { entry, currentPath } = item;
+    const relativePath = `${currentPath}${currentPath ? '/' : ''}${entry.name}`;
+
     if (entry.kind === 'file') {
       const fileExtension = `.${entry.name.split('.').pop()?.toLowerCase()}`;
       if (AUDIO_EXTENSIONS.includes(fileExtension)) {
-        // We need to request the handle again to get a FileSystemFileHandle
-        const fileHandle = await dirHandle.getFileHandle(entry.name);
-        yield [fileHandle, relativePath];
+        return [entry as FileSystemFileHandle, relativePath];
       }
-    } else if (entry.kind === 'directory') {
-      const subDirHandle = await dirHandle.getDirectoryHandle(entry.name);
-      yield* walkDirectory(subDirHandle, relativePath);
+    }
+    return null;
+  };
+
+  const results: ([FileSystemFileHandle, string] | null)[] = [];
+  const processingQueue: { id: number; promise: Promise<[FileSystemFileHandle, string] | null> }[] = [];
+  let promiseIdCounter = 0;
+
+  for (const item of filesToProcess) {
+    if (abortSignal?.aborted) {
+      throw new DOMException('Aborted', 'AbortError');
+    }
+
+    const currentPromiseId = promiseIdCounter++;
+    const promise = processFile(item).then(result => {
+      processedCount++;
+      progressCallback?.(processedCount, totalCount);
+      return result;
+    });
+
+    processingQueue.push({ id: currentPromiseId, promise });
+
+    if (processingQueue.length >= CONCURRENCY_LIMIT) {
+      // Wait for any promise in the queue to complete
+      const { id: resolvedId, result: resolvedValue } = await Promise.race(
+        processingQueue.map(p => p.promise.then(result => ({ id: p.id, result })))
+      );
+
+      // Remove the completed promise from the queue by its ID
+      const index = processingQueue.findIndex(p => p.id === resolvedId);
+      if (index > -1) {
+        processingQueue.splice(index, 1);
+      }
+      results.push(resolvedValue);
+    }
+  }
+
+  // Wait for any remaining promises to complete
+  const finalResults = await Promise.all(processingQueue.map(p => p.promise));
+  results.push(...finalResults);
+
+  for (const result of results) {
+    if (result) {
+      yield result;
     }
   }
 }
+
+
 
 /**
  * Retrieves a FileSystemFileHandle from a relative path within a root directory handle.

@@ -38,6 +38,8 @@ i18n
           directory_error_message: 'Could not open the selected folder, possibly due to system file restrictions. Please try selecting a subfolder or use the fallback option.',
           select_subdirectory_button: 'Select Subfolder',
           select_files_fallback_button: 'Select Files (Fallback)',
+          scanning_progress: 'Scanning: {{processed}} / {{total}} files',
+          abort_scan: 'Abort Scan',
         },
       },
       de: {
@@ -66,6 +68,8 @@ i18n
           directory_error_message: 'Der ausgewählte Ordner konnte nicht geöffnet werden, möglicherweise aufgrund von Systemdateibeschränkungen. Bitte versuchen Sie, einen Unterordner auszuwählen oder die Fallback-Option zu verwenden.',
           select_subdirectory_button: 'Unterordner wählen',
           select_files_fallback_button: 'Dateien wählen (Fallback)',
+          scanning_progress: 'Scannt: {{processed}} / {{total}} Dateien',
+          abort_scan: 'Scan abbrechen',
         },
       },
     },
