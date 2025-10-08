@@ -109,8 +109,11 @@ export async function* walkDirectory(
       }
       const newPath = `${currentPath}${currentPath ? '/' : ''}${entry.name}`;
       if (entry.kind === 'file') {
-        totalCount++;
-        filesToProcess.push({ entry, currentPath });
+        const fileExtension = `.${entry.name.split('.').pop()?.toLowerCase()}`;
+        if (AUDIO_EXTENSIONS.includes(fileExtension)) {
+          totalCount++;
+          filesToProcess.push({ entry, currentPath });
+        }
       } else if (entry.kind === 'directory') {
         const subDirHandle = await (entry as FileSystemDirectoryHandle).getDirectoryHandle(entry.name);
         await collectEntries(subDirHandle, newPath);
