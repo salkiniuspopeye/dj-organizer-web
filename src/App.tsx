@@ -18,6 +18,7 @@ export default function App() {
   const [pendingMovePlan, setPendingMovePlan] = useState<MovePlan | null>(null);
   const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
   const [trackCount, setTrackCount] = useState(0);
+  const [showDirectoryError, setShowDirectoryError] = useState(false);
 
   const handleIndexFolder = useCallback(async () => {
     if (!directoryHandle) return;
@@ -199,15 +200,62 @@ export default function App() {
       {t("app_title")}
       {trackCount === 0 ? (
         <div className="mt-8 text-center">
-          <p className="text-lg text-gray-300 mb-4">{t("empty_state_message")}</p>
+          {showDirectoryError ? (
+            <div className="p-4 bg-red-500 text-white rounded-lg mb-4">
+              <p className="mb-2">
+                {t("directory_error_message")}
+              </p>
+              <button
+                onClick={async () => {
+                  setShowDirectoryError(false); // Reset error state
+                  try {
+                    const handle = await window.showDirectoryPicker();
+                    await saveDirectoryHandle(handle);
+                    setDirectoryHandle(handle);
+                  } catch (error: any) {
+                    console.error('Error selecting directory:', error);
+                    if (error.name === 'AbortError') {
+                      console.log('Directory picker aborted by user.');
+                    } else if (error instanceof DOMException && error.message.includes('system files')) {
+                      setShowDirectoryError(true);
+                    } else {
+                      alert(`Error selecting directory: ${error.message}`);
+                    }
+                  }
+                }}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mr-2"
+              >
+                {t("select_subdirectory_button")}
+              </button>
+              <button
+                onClick={() => {
+                  console.log('Fallback "Dateien wählen" clicked.');
+                  // This will be implemented in a future task
+                }}
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              >
+                {t("select_files_fallback_button")}
+              </button>
+            </div>
+          ) : (
+            <p className="text-lg text-gray-300 mb-4">{t("empty_state_message")}</p>
+          )}
           <button
             onClick={async () => {
+              setShowDirectoryError(false); // Reset error state
               try {
                 const handle = await window.showDirectoryPicker();
                 await saveDirectoryHandle(handle);
                 setDirectoryHandle(handle);
-              } catch (error) {
+              } catch (error: any) {
                 console.error('Error selecting directory:', error);
+                if (error.name === 'AbortError') {
+                  console.log('Directory picker aborted by user.');
+                } else if (error instanceof DOMException && error.message.includes('system files')) {
+                  setShowDirectoryError(true);
+                } else {
+                  alert(`Error selecting directory: ${error.message}`);
+                }
               }
             }}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -220,12 +268,20 @@ export default function App() {
         <>
           <button
             onClick={async () => {
+              setShowDirectoryError(false); // Reset error state
               try {
                 const handle = await window.showDirectoryPicker();
                 await saveDirectoryHandle(handle);
                 setDirectoryHandle(handle);
-              } catch (error) {
+              } catch (error: any) {
                 console.error('Error selecting directory:', error);
+                if (error.name === 'AbortError') {
+                  console.log('Directory picker aborted by user.');
+                } else if (error instanceof DOMException && error.message.includes('system files')) {
+                  setShowDirectoryError(true);
+                } else {
+                  alert(`Error selecting directory: ${error.message}`);
+                }
               }
             }}
               className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
