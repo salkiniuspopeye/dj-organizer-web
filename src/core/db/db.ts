@@ -4,6 +4,7 @@ import type { MovePlanItem } from '../fs/moveEngine';
 export interface Track {
   id: string;
   name: string;
+  lowerCaseName?: string; // For case-insensitive sorting
   size: number;
   mtime?: number; // Modification time in milliseconds
   duration?: number;
