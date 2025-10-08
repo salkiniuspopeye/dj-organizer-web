@@ -65,7 +65,7 @@ export async function getDirectoryHandle(): Promise<FileSystemDirectoryHandle> {
  * @param dirHandle The FileSystemDirectoryHandle to start from.
  * @returns An async generator that yields [FileSystemFileHandle, relativePath].
  */
-const AUDIO_EXTENSIONS = [
+export const AUDIO_EXTENSIONS = [
   '.mp3', '.wav', '.ogg', '.flac', '.aiff', '.aif',
 ];
 

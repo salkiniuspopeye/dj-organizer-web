@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { SwipeFeed } from "./features/swipe/SwipeFeed";
 import { useTranslation } from 'react-i18next';
 import { generateMovePlan, executeMovePlan, type MovePlanItem } from './core/fs/moveEngine';
 import { MoveProgressDialog } from './shared/ui/MoveProgressDialog';
 import { db, type MovePlan, type Track } from './core/db/db';
 import { saveDirectoryHandle, loadDirectoryHandle } from './core/fs/directoryHandler';
-import { walkDirectory } from './core/fs/fileSystem';
+import { walkDirectory, AUDIO_EXTENSIONS } from './core/fs/fileSystem';
 import { trackRepository } from './core/db/trackRepository';
 
 export default function App() {
@@ -19,6 +19,32 @@ export default function App() {
   const [directoryHandle, setDirectoryHandle] = useState<FileSystemDirectoryHandle | null>(null);
   const [trackCount, setTrackCount] = useState(0);
   const [showDirectoryError, setShowDirectoryError] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleIndexFiles = useCallback(async (files: FileList) => {
+    console.log('Indexing files from fallback:', files);
+    const newTracks: Track[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileExtension = `.${file.name.split('.').pop()?.toLowerCase()}`;
+      if (AUDIO_EXTENSIONS.includes(fileExtension)) {
+        newTracks.push({
+          id: file.name, // Use file name as ID for now, should be more robust later
+          name: file.name,
+          lowerCaseName: file.name.toLowerCase(),
+          size: file.size,
+          mtime: file.lastModified,
+          source: 'local',
+          path: file.webkitRelativePath || file.name, // Use webkitRelativePath for folder structure
+          status: 'unassigned',
+        });
+      }
+    }
+    await trackRepository.saveTracks(newTracks);
+    console.log(`Indexed ${newTracks.length} tracks from fallback.`);
+    setShowDirectoryError(false);
+    setDirectoryHandle(null); // Indicate that no DirectoryHandle is active
+  }, []);
 
   const handleIndexFolder = useCallback(async () => {
     if (!directoryHandle) return;
@@ -30,6 +56,7 @@ export default function App() {
       newTracks.push({
         id: file.name, // Use file name as ID for now, should be more robust later
         name: file.name,
+        lowerCaseName: file.name.toLowerCase(),
         size: file.size,
         mtime: file.lastModified,
         source: 'local',
@@ -229,8 +256,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => {
-                  console.log('Fallback "Dateien wählen" clicked.');
-                  // This will be implemented in a future task
+                  fileInputRef.current?.click();
                 }}
                 className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
@@ -240,6 +266,20 @@ export default function App() {
           ) : (
             <p className="text-lg text-gray-300 mb-4">{t("empty_state_message")}</p>
           )}
+          <input
+            type="file"
+            multiple
+            // @ts-ignore
+            webkitdirectory
+            directory=""
+            ref={fileInputRef}
+            onChange={(event) => {
+              if (event.target.files) {
+                handleIndexFiles(event.target.files);
+              }
+            }}
+            style={{ display: 'none' }}
+          />
           <button
             onClick={async () => {
               setShowDirectoryError(false); // Reset error state
